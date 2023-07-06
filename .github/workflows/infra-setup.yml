@@ -29,10 +29,9 @@ jobs:
               echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
           - name: 'Run Terraform script'
             if: ${{ always() }}
-            working-directory: ${{ env.REPO_NAME }}
+            working-directory:  $GOPATH
             shell: bash
             run: |
-              echo ${{ env.REPO_NAME }}
-              cd terraform
+              cd ${{ env.REPO_NAME }}/terraform
               ls -l
-              $GOPATH/terraform version
+              terraform version
