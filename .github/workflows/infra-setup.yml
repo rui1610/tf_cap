@@ -30,7 +30,7 @@ jobs:
       uses: hashicorp/terraform-github-actions/init@v0.4.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TF_ACTION_WORKING_DIR: ${{ env.REPO_NAME }}/terraform
+        TF_ACTION_WORKING_DIR: 'terraform'
         BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
         BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
 
@@ -41,6 +41,6 @@ jobs:
       uses: hashicorp/terraform-github-actions/apply@v0.4.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TF_ACTION_WORKING_DIR: ${{ env.REPO_NAME }}/terraform
+        TF_ACTION_WORKING_DIR: 'terraform'
         BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
         BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
