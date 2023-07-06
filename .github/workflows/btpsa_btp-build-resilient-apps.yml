@@ -25,15 +25,14 @@ jobs:
           - name: Set up Git repository
             uses: actions/checkout@v3
           - name: "Get repo folder in container"
-            working-directory: /home/user
             shell: bash
             run: |
               echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
           - name: 'Run Terraform script'
             if: ${{ always() }}
-            working-directory: /home/user
+            working-directory: ${{ env.REPO_NAME }}
             shell: bash
             run: |
-              cd ${{ env.REPO_NAME }}/terraform
+              cd terraform
               ./terraform init
               ./terraform apply -auto-approve
