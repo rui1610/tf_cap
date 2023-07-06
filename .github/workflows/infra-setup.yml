@@ -35,3 +35,4 @@ jobs:
               echo ${{ env.REPO_NAME }}
               cd terraform
               ls -l
+              terraform version
