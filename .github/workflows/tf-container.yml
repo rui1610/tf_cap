@@ -49,7 +49,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
-          file: ./terra/Dockerfile
+          file: ./terraform/Dockerfile
           build-args: |
             BTPSA_VERSION_GIT_ARG=${{ github.sha }}
           push: true
