@@ -11,7 +11,7 @@ on:
     branches:
       - main
 
-
+# Taken from https://www.pluralsight.com/resources/blog/cloud/how-to-use-github-actions-to-automate-terraform
 jobs:
   setup-infrastructure:
     name: Deploy app
