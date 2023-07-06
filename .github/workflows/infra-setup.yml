@@ -11,27 +11,36 @@ on:
     branches:
       - main
 
+
 jobs:
-    setup-infrastructure:
-        runs-on: ubuntu-latest
-        container:
-          image: ghcr.io/rui1610/tf_cap:main
-          options: --user root
-        env: 
-            BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
-            BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
-        steps:
-          - name: Set up Git repository
-            uses: actions/checkout@v3
-          - name: "Get repo folder in container"
-            shell: bash
-            run: |
-              echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
-          - name: 'Run Terraform script'
-            if: ${{ always() }}
-            working-directory:  $GOPATH
-            shell: bash
-            run: |
-              cd ${{ env.REPO_NAME }}/terraform
-              ls -l
-              ./terraform version
+  setup-infrastructure:
+    name: Deploy app
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    - name: "Get repo folder in container"
+      shell: bash
+      run: |
+        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+    - name: Terraform Init
+      uses: hashicorp/terraform-github-actions/init@v0.4.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TF_ACTION_WORKING_DIR: ${{ env.REPO_NAME }}/terraform
+        BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
+        BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
+
+    - name: Terraform Validate
+      uses: hashicorp/terraform-github-actions/validate@v0.3.7
+
+    - name: Terraform Apply
+      uses: hashicorp/terraform-github-actions/apply@v0.4.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TF_ACTION_WORKING_DIR: ${{ env.REPO_NAME }}/terraform
+        BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
+        BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
