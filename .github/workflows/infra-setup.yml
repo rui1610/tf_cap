@@ -15,7 +15,7 @@ jobs:
     setup-infrastructure:
         runs-on: ubuntu-latest
         container:
-          image: hashicorp/terraform:latest
+          image: ghcr.io/rui1610/tf_cap:main
           options: --user root
         env: 
             BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
