@@ -12,7 +12,7 @@ on:
       - main
 
 jobs:
-    deploy-resilient-apps:
+    setup-infrastructure:
         runs-on: ubuntu-latest
         container:
           image: hashicorp/terraform:latest
