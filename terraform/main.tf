@@ -1,9 +1,13 @@
+locals {
+  uuid = uuid()
+}
+
 ###
 # Creation of subaccount
 ###
 resource "btp_subaccount" "project" {
   name      = var.subaccount_name
-  subdomain = local.uuid()
+  subdomain = local.uuid
   region    = lower("${var.region}")
 }
 
@@ -24,8 +28,8 @@ module "cloudfoundry_environment" {
   source = "github.com/SAP-samples/btp-terraform-samples/released/modules/envinstance-cloudfoundry/"
 
   subaccount_id         = btp_subaccount.project.id
-  instance_name         = local.replace(uuid()), "-", "_")
-  cloudfoundry_org_name = local.replace(uuid()), "-", "_")
+  instance_name         = replace(local.uuid, "-", "_")
+  cloudfoundry_org_name = replace(local.uuid, "-", "_")
 }
 
 resource "btp_subaccount_entitlement" "entitlements" {
