@@ -49,7 +49,9 @@ jobs:
       shell: bash
     - name: Terraform Ouput
       id: terraform_output
-      run: terraform output -json
+      run: |
+        output=${terraform output -json}
+        echo "cf_org=$output" >> $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
