@@ -36,7 +36,7 @@ module "cloudfoundry_environment" {
 ###
 # Create Cloud Foundry space and assign users
 ###
-#module "cloudfoundry_space" {
+module "cloudfoundry_space" {
   source = "github.com/SAP-samples/btp-terraform-samples/released/modules/cloudfoundry-space/"
   cf_org_id           = module.cloudfoundry_environment.org_id
   name                = "development"
