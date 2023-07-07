@@ -13,12 +13,12 @@ output "subaccount_name" {
   description = "The name of the project subaccount."
 }
 
-output "cloudfoundry_instance_name" {
-  value       = cloudfoundry_environment.instance_name
+output "cloudfoundry_org_id" {
+  value       = module.cloudfoundry_environment.org_id
   description = "The instance_name of the cf environment."
 }
 
-output "cloudfoundry_org_name" {
-  value       = cloudfoundry_environment.cloudfoundry_org_name
-  description = "The cloudfoundry_org_name of the cf environment."
-}
+#output "cloudfoundry_org_name" {
+#  value       = cloudfoundry_environment.cloudfoundry_org_name
+#  description = "The cloudfoundry_org_name of the cf environment."
+#}
