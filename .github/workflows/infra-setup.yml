@@ -46,11 +46,11 @@ jobs:
       working-directory: terraform
       shell: bash
     - name: Cache Terraform output
-      id: terraform-output
+      id: terraform-results
       uses: actions/cache@v3
       with:
         path: /terraform-output
-        key: ${{ steps.plan.terraform_apply.stdout }}
+        key: ${{ steps.terraform_apply.outputs.stdout }}
 
 
 #  build-cap-application:
