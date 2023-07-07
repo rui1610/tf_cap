@@ -51,35 +51,35 @@ jobs:
       with:
         path: /terraform-output
         key: ${{ steps.plan.terraform_apply.stdout }}
-        run: echo {{ steps.plan.terraform_apply.stdout }}
 
-  build-cap-application:
-    name: Build CAP application
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/rui1610/tf_cap:main
-      options: --user root
-    steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v3
-    - name: "Get repo folder in container"
-      shell: bash
-      run: |
-        cd /terraform-output
-        ls -l
-    - name: 'Start build process for CAP app'
-      if: ${{ always() }}
-      working-directory: /home/user
-      shell: bash
-      run: |
-        cd demo-app
-        mbt build -t ./
-        ls -l
+
+#  build-cap-application:
+#    name: Build CAP application
+#    runs-on: ubuntu-latest
+#    container:
+#      image: ghcr.io/rui1610/tf_cap:main
+#      options: --user root
+#    steps:
+#    - name: Checkout Repo
+#      uses: actions/checkout@v3
+#    - name: "Get repo folder in container"
+#      shell: bash
+#      run: |
+#        cd /terraform-output
+#        ls -l
+#    - name: 'Start build process for CAP app'
+#      if: ${{ always() }}
+#      working-directory: /home/user
+#      shell: bash
+#      run: |
+#        cd demo-app
+#        mbt build -t ./
+#        ls -l
 
   deploy-cap-application:
     name: Deploy CAP application
     runs-on: ubuntu-latest
-    needs: [build-cap-application, provision-infrastructure]    
+    needs: [provision-infrastructure]    
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -88,11 +88,14 @@ jobs:
       working-directory: /home/user
       shell: bash
       run: \
-        cf api https://api.cf.us10.hana.ondemand.com
-        cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
-        cf target -o ORGNAME
-        cf target -s 'development'
-        cd demo-app
-        cf deploy cpapp_1.0.0.mtar
+        cd /terraform-output
+        ls -l
+        #cd /home/user
+        #cf api https://api.cf.us10.hana.ondemand.com
+        #cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
+        #cf target -o ORGNAME
+        #cf target -s 'development'
+        #cd demo-app
+        #cf deploy cpapp_1.0.0.mtar
 
       
