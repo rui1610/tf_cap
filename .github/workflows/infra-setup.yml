@@ -11,24 +11,20 @@ on:
     branches:
       - main
 
-# Taken from https://www.pluralsight.com/resources/blog/cloud/how-to-use-github-actions-to-automate-terraform
+# Taken from https://github.com/hashicorp/setup-terraform
 jobs:
-  setup-infrastructure:
-    name: Deploy app
+  provision-infrastructure:
+    name: Run Terraform script
     runs-on: ubuntu-latest
     steps:
-
     - name: Checkout Repo
       uses: actions/checkout@v3
-
     - name: "Get repo folder in container"
       shell: bash
       run: |
         echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
-
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
-
     - name: Terraform Init
       id: init
       run: terraform init
@@ -39,10 +35,9 @@ jobs:
         BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
       working-directory: terraform
       shell: bash
-
     - name: Terraform Apply
-      id: apply
-      run: terraform apply -auto-approve
+      id: terraform_apply
+      run: terraform apply -auto-approve -json
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
@@ -50,3 +45,54 @@ jobs:
         BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
       working-directory: terraform
       shell: bash
+    - name: Cache Terraform output
+      id: terraform-output
+      uses: actions/cache@v3
+      with:
+        path: /terraform-output
+        key: {{ steps.plan.terraform_apply.stdout }}
+        run: echo {{ steps.plan.terraform_apply.stdout }}
+
+  build-cap-application:
+    name: Build CAP application
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/rui1610/tf_cap:main
+      options: --user root
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: "Get repo folder in container"
+      shell: bash
+      run: |
+        cd /terraform-output
+        ls -l
+    - name: 'Start build process for CAP app'
+      if: ${{ always() }}
+      working-directory: /home/user
+      shell: bash
+      run: |
+        cd demo-app
+        mbt build -t ./
+        ls -l
+
+  deploy-cap-application:
+    name: Deploy CAP application
+    runs-on: ubuntu-latest
+    needs: [build-cap-application, provision-infrastructure]    
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: 'Start build process for CAP app'
+      if: ${{ always() }}
+      working-directory: /home/user
+      shell: bash
+      run: \
+        cf api https://api.cf.us10.hana.ondemand.com
+        cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
+        cf target -o ORGNAME
+        cf target -s 'development'
+        cd demo-app
+        cf deploy cpapp_1.0.0.mtar
+
+      
