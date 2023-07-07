@@ -8,5 +8,5 @@ terraform {
 }
 
 provider "btp" {
-  globalaccount = "ticrossa"
+  globalaccount = var.globalaccount_subdomain
 }
