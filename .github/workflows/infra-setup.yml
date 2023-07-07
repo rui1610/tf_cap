@@ -33,8 +33,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
-        BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
-        BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
       working-directory: terraform
       shell: bash
     - name: Terraform Apply
@@ -45,6 +43,8 @@ jobs:
         TF_ACTION_WORKING_DIR: 'terraform'
         BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
         BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
+        CF_USER: ${{ secrets.BTP_USERNAME }}
+        CF_PASSWORD: ${{ secrets.BTP_PASSWORD }}
       working-directory: terraform
       shell: bash
     - name: Terraform Ouput
@@ -53,8 +53,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
-        BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
-        BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
       working-directory: terraform
       shell: bash
 

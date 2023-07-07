@@ -32,7 +32,7 @@ module "cloudfoundry_environment" {
   cloudfoundry_org_name = replace(local.uuid, "-", "")
 }
 
-/*
+
 ###
 # Create Cloud Foundry space and assign users
 ###
@@ -44,7 +44,7 @@ module "cloudfoundry_environment" {
   cf_space_developers = var.app_admins
   cf_space_auditors   = var.app_admins
 }
-*/
+
 
 resource "btp_subaccount_entitlement" "entitlements" {
 
