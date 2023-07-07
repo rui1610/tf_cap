@@ -87,7 +87,7 @@ jobs:
   deploy-cap-application:
     name: Deploy CAP application
     runs-on: ubuntu-latest
-    needs: provision-infrastructure
+    needs: infrastructure1
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
