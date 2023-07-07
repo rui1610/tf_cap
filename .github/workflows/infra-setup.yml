@@ -13,11 +13,11 @@ on:
 
 # Taken from https://github.com/hashicorp/setup-terraform
 jobs:
-  provision-infrastructure:
+  infrastructure1:
     name: Run Terraform script
     runs-on: ubuntu-latest
     outputs:
-      cf_org: ${{ steps.terraform_apply.outputs.cf_org }}
+      cf_org: ${{ steps.terraform_output.outputs.cf_org }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -85,7 +85,7 @@ jobs:
 #      working-directory: /home/user
       shell: bash
       env:
-        CF_ORG: ${{needs.provision-infrastructure.outputs.cf_org}}
+        CF_ORG: ${{needs.infrastructure1.outputs.cf_org}}
  
       run: |
         pwd
