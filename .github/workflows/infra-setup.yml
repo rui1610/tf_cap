@@ -17,7 +17,7 @@ jobs:
     name: Run Terraform script
     runs-on: ubuntu-latest
     outputs:
-      cf_org: ${{ steps.terraform_output.outputs.cf_org }}
+      cf_org: ${{ steps.var_retrieval.outputs.cf_org }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -47,8 +47,20 @@ jobs:
         BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
       working-directory: terraform
       shell: bash
-    - name: Extract data from Terraform run
+    - name: Terraform Ouput
       id: terraform_output
+      run: terraform output -json
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        TF_ACTION_WORKING_DIR: 'terraform'
+        BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
+        BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
+      working-directory: terraform
+      shell: bash
+
+
+    - name: Extract data from Terraform run
+      id: var_retrieval
       run: |
         echo "cf_org=cf_orgname-1234567" >> $GITHUB_OUTPUT
 
