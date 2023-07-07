@@ -28,8 +28,8 @@ module "cloudfoundry_environment" {
   source = "github.com/SAP-samples/btp-terraform-samples/released/modules/envinstance-cloudfoundry/"
 
   subaccount_id         = btp_subaccount.project.id
-  instance_name         = replace(local.uuid, "-", "_")
-  cloudfoundry_org_name = replace(local.uuid, "-", "_")
+  instance_name         = replace(local.uuid, "-", "")
+  cloudfoundry_org_name = replace(local.uuid, "-", "")
 }
 
 resource "btp_subaccount_entitlement" "entitlements" {
