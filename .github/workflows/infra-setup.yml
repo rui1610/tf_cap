@@ -50,7 +50,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: /terraform-output
-        key: {{ steps.plan.terraform_apply.stdout }}
+        key: ${{ steps.plan.terraform_apply.stdout }}
         run: echo {{ steps.plan.terraform_apply.stdout }}
 
   build-cap-application:
