@@ -52,6 +52,7 @@ jobs:
     - name: Terraform Ouput
       id: terraform_output
       run: |
+        output=$(terraform output test)
         terraform output -json >> tf_outputs.json
         echo "cf_org=$output" >> $GITHUB_OUTPUT
       env:
