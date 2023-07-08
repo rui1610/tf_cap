@@ -50,7 +50,7 @@ jobs:
     - name: Terraform Ouput
       id: terraform_output
       run: |
-        output=${terraform output -json}
+        terraform output -json >> tf_outputs.json
         echo "cf_org=$output" >> $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
