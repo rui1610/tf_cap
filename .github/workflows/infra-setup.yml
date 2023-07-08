@@ -52,9 +52,9 @@ jobs:
     - name: Terraform Ouput
       id: terraform_output
       run: |
-        output=$(terraform output test)
+        cloudfoundry_org_id=$(terraform output cloudfoundry_org_id)
         terraform output -json >> tf_outputs.json
-        echo "cf_org=$output" >> $GITHUB_OUTPUT
+        echo "cloudfoundry_org_id=$cloudfoundry_org_id" >> $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
@@ -100,7 +100,7 @@ jobs:
 #      working-directory: /home/user
       shell: bash
       env:
-        CF_ORG: ${{needs.infrastructure1.outputs.cf_org}}
+        CF_ORG: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
  
       run: |
         pwd
