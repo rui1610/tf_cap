@@ -94,12 +94,16 @@ jobs:
 #      working-directory: /home/user
       shell: bash
       env:
-        CF_ORG: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
+        CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
+        SUBACCOUNT_ID: ${{needs.infrastructure1.outputs.subaccount_id}}
+        SUBACCOUNT_NAME: ${{needs.infrastructure1.outputs.subaccount_name}}
  
       run: |
         pwd
         ls -l
-        echo ${{ env.CF_ORG }}
+        echo ${{ env.CF_ORG_ID }}
+        echo ${{ env.SUBACCOUNT_ID }}
+        echo ${{ env.SUBACCOUNT_NAME }}
 #        cd /terraform-output
 #        ls -l
 #        cd /home/user
