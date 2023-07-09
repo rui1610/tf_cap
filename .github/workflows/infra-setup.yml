@@ -52,19 +52,14 @@ jobs:
     - name: Terraform Ouput
       id: terraform_output
       run: |
-        cloudfoundry_org_id=$(terraform output cloudfoundry_org_id)
         echo "cloudfoundry_org_id=$(terraform output cloudfoundry_org_id)" >> $GITHUB_OUTPUT 
+        echo "subaccount_id=$(terraform output subaccount_id)" >> $GITHUB_OUTPUT 
+        echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
       working-directory: terraform
       shell: bash
-
-
-    - name: Extract data from Terraform run
-      id: var_retrieval
-      run: |
-        echo "cf_org=cf_orgname-1234567" >> $GITHUB_OUTPUT
 
 #  build-cap-application:
 #    name: Build CAP application
