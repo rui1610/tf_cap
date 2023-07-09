@@ -19,6 +19,6 @@ output "cloudfoundry_org_id" {
 }
 
 output "cloudfoundry_space_name" {
-  value       = cloudfoundry_space.name
+  value       = module.cloudfoundry_space.name
   description = "The cloudfoundry_space name."
 }
