@@ -20,6 +20,7 @@ jobs:
       cloudfoundry_org_id: ${{ steps.terraform_output.outputs.cloudfoundry_org_id }}
       subaccount_id: ${{ steps.terraform_output.outputs.subaccount_id }}
       subaccount_name: ${{ steps.terraform_output.outputs.subaccount_name }}
+      cloudfoundry_space_name: ${{ steps.terraform_output.outputs.cloudfoundry_space_name }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -57,33 +58,34 @@ jobs:
         echo "cloudfoundry_org_id=$(terraform output cloudfoundry_org_id)" >> $GITHUB_OUTPUT 
         echo "subaccount_id=$(terraform output subaccount_id)" >> $GITHUB_OUTPUT 
         echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT 
+        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" >> $GITHUB_OUTPUT 
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
       working-directory: terraform
       shell: bash
 
-#  build-cap-application:
-#    name: Build CAP application
-#    runs-on: ubuntu-latest
-#    container:
-#      image: ghcr.io/rui1610/tf_cap:main
-#      options: --user root
-#    steps:
-#    - name: Checkout Repo
-#      uses: actions/checkout@v3
-#    - name: "Get repo folder in container"
-#      shell: bash
-#      run: |
-#        cd /terraform-output
-#        ls -l
-#    - name: 'Start build process for CAP app'
-#      working-directory: /home/user
-#      shell: bash
-#      run: |
-#        cd demo-app
-#        mbt build -t ./
-#        ls -l
+  build-cap-application:
+    name: Build CAP application
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/rui1610/tf_cap:main
+      options: --user root
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: "Get repo folder in container"
+      shell: bash
+      run: |
+        cd /terraform-output
+        ls -l
+    - name: 'Start build process for CAP app'
+      working-directory: /home/user
+      shell: bash
+      run: |
+        cd demo-app
+        mbt build -t ./
+        ls -l
 
   deploy-cap-application:
     name: Deploy CAP application
@@ -97,23 +99,18 @@ jobs:
       shell: bash
       env:
         CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
+        CF_SPACE_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_space_name}}
         SUBACCOUNT_ID: ${{needs.infrastructure1.outputs.subaccount_id}}
         SUBACCOUNT_NAME: ${{needs.infrastructure1.outputs.subaccount_name}}
- 
       run: |
         pwd
         ls -l
-        echo ${{ env.CF_ORG_ID }}
-        echo ${{ env.SUBACCOUNT_ID }}
-        echo ${{ env.SUBACCOUNT_NAME }}
-#        cd /terraform-output
-#        ls -l
-#        cd /home/user
-#        cf api https://api.cf.us10.hana.ondemand.com
-#        cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
-#        cf target -o ORGNAME
-#        cf target -s 'development'
-#        cd demo-app
-#        cf deploy cpapp_1.0.0.mtar
+        cd /home/user
+        cf api https://api.cf.us10.hana.ondemand.com
+        cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
+        cf target -o $CF_ORG_ID
+        cf target -s '$CF_SPACE_NAME'
+        cd demo-app
+        cf deploy cpapp_1.0.0.mtar
 
       

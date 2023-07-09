@@ -18,7 +18,7 @@ output "cloudfoundry_org_id" {
   description = "The instance_name of the cf environment."
 }
 
-#output "cloudfoundry_org_name" {
-#  value       = cloudfoundry_environment.cloudfoundry_org_name
-#  description = "The cloudfoundry_org_name of the cf environment."
-#}
+output "cloudfoundry_space_name" {
+  value       = cloudfoundry_space.name
+  description = "The cloudfoundry_space name."
+}
