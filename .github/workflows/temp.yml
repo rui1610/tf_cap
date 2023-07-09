@@ -1,0 +1,37 @@
+name: Setup infrastructure for app
+# This file defines a workflow that calls the btp-setup-automator and deploys a
+# use case around building resilient apps 
+# see https://github.com/SAP-samples/btp-build-resilient-apps
+
+on:
+  workflow_dispatch:
+
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+# Taken from https://github.com/hashicorp/setup-terraform
+jobs:
+
+  build-cap-application:
+    name: Build CAP application
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/rui1610/tf_cap:main
+      options: --user root
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: "Get repo folder in container"
+      shell: bash
+      run: |
+        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
+    - name: 'Start build process for CAP app'
+      working-directory: ${{ env.REPO_NAME }}
+      shell: bash
+      run: |
+        pwd
+        ls -l
+        mbt build -t ./
+        ls -l
