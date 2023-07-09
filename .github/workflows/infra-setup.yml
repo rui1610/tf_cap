@@ -75,7 +75,6 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v3
     - name: "Get repo folder in container"
-      working-directory: /home/user
       shell: bash
       run: |
         echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
@@ -95,7 +94,6 @@ jobs:
       uses: actions/checkout@v3
 
     - name: "Get repo folder in container"
-      working-directory: /home/user
       shell: bash
       run: |
         echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
@@ -111,7 +109,7 @@ jobs:
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
         cf target -o $CF_ORG_ID
-        cf target -s '$CF_SPACE_NAME'
+        cf target -s '$CF_SPACE_ID'
         cd demo-app
         cf deploy cpapp_1.0.0.mtar
 
