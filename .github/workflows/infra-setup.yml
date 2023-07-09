@@ -74,11 +74,15 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    - name: 'Start build process for CAP app'
+    - name: "Get repo folder in container"
       working-directory: /home/user
       shell: bash
       run: |
-        cd demo-app
+        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
+    - name: 'Start build process for CAP app'
+      working-directory: ${{ env.REPO_NAME }}/demo-app
+      shell: bash
+      run: |
         mbt build -t ./
         ls -l
 
@@ -89,8 +93,14 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
+
+    - name: "Get repo folder in container"
+      working-directory: /home/user
+      shell: bash
+      run: |
+        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
     - name: 'Start build process for CAP app'
-#      working-directory: /home/user
+      working-directory: ${{ env.REPO_NAME }}/demo-app
       shell: bash
       env:
         CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
@@ -98,9 +108,6 @@ jobs:
         SUBACCOUNT_ID: ${{needs.infrastructure1.outputs.subaccount_id}}
         SUBACCOUNT_NAME: ${{needs.infrastructure1.outputs.subaccount_name}}
       run: |
-        pwd
-        ls -l
-        cd /home/user
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
         cf target -o $CF_ORG_ID
