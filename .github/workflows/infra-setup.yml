@@ -17,7 +17,9 @@ jobs:
     name: Run Terraform script
     runs-on: ubuntu-latest
     outputs:
-      cf_org: ${{ steps.var_retrieval.outputs.cf_org }}
+      cloudfoundry_org_id: ${{ steps.terraform_output.outputs.cloudfoundry_org_id }}
+      subaccount_id: ${{ steps.terraform_output.outputs.subaccount_id }}
+      subaccount_name: ${{ steps.terraform_output.outputs.subaccount_name }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
