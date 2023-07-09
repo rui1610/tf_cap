@@ -79,38 +79,9 @@ jobs:
       run: |
         echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
     - name: 'Start build process for CAP app'
-      working-directory: ${{ env.REPO_NAME }}/demo-app
+      working-directory: ${{ env.REPO_NAME }}
       shell: bash
       run: |
-        mbt build -t ./
-        ls -l
-
-  deploy-cap-application:
-    name: Deploy CAP application
-    runs-on: ubuntu-latest
-    needs: infrastructure1
-    steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v3
-
-    - name: "Get repo folder in container"
-      shell: bash
-      run: |
-        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
-    - name: 'Start build process for CAP app'
-      working-directory: ${{ env.REPO_NAME }}/demo-app
-      shell: bash
-      env:
-        CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
-        CF_SPACE_ID: ${{needs.infrastructure1.outputs.cloudfoundry_space_id}}
-        SUBACCOUNT_ID: ${{needs.infrastructure1.outputs.subaccount_id}}
-        SUBACCOUNT_NAME: ${{needs.infrastructure1.outputs.subaccount_name}}
-      run: |
-        cf api https://api.cf.us10.hana.ondemand.com
-        cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
-        cf target -o $CF_ORG_ID
-        cf target -s '$CF_SPACE_ID'
         cd demo-app
-        cf deploy cpapp_1.0.0.mtar
-
-      
+        mbt build -s ./
+        ls -l

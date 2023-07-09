@@ -34,5 +34,5 @@ jobs:
         pwd
         cd demo-app
         ls -l
-        mbt build -t ./
+        mbt build -s ./
         ls -l
