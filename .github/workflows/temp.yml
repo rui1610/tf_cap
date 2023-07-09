@@ -1,4 +1,4 @@
-name: Setup infrastructure for app
+name: Temp
 # This file defines a workflow that calls the btp-setup-automator and deploys a
 # use case around building resilient apps 
 # see https://github.com/SAP-samples/btp-build-resilient-apps
