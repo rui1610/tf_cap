@@ -3,11 +3,6 @@ name: Temp
 on:
   workflow_dispatch:
 
-  pull_request:
-    types: [closed]
-    branches:
-      - main
-
 env:
   TARGET_BRANCH: main
   CF_METADATA_FILENAME: cloudfoundry.tfvars
