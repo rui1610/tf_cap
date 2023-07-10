@@ -19,7 +19,7 @@ output "cloudfoundry_org_id" {
 }
 
 output "cloudfoundry_org_name" {
-  value       = module.cloudfoundry_environment.org_name
+  value       = module.cloudfoundry_environment.instance_name
   description = "The instance_name of the cf environment."
 }
 
