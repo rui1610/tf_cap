@@ -131,9 +131,8 @@ jobs:
   deploy-cap-application:
     name: Deploy CAP application
     runs-on: ubuntu-latest
-    needs: [check-if-cf-file-exists, build-cap-application]
+    needs: [build-cap-application, infrastructure1]
     if: |
-      always() && 
       (needs.build-cap-application.result == 'success' && needs.infrastructure1.result == 'skipped') || 
       (needs.build-cap-application.result == 'success' && needs.infrastructure1.result == 'success')
 
