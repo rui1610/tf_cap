@@ -41,6 +41,7 @@ jobs:
       id: terraform_apply
       run: terraform apply -auto-approve
       env:
+        TARGET_BRANCH: main
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
         BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
@@ -49,18 +50,28 @@ jobs:
         CF_PASSWORD: ${{ secrets.BTP_PASSWORD }}
       working-directory: terraform
       shell: bash
-    - name: Terraform Ouput
+    - name: Terraform Output
       id: terraform_output
       run: |
         echo "cloudfoundry_org_id=$(terraform output cloudfoundry_org_id)" >> $GITHUB_OUTPUT 
         echo "subaccount_id=$(terraform output subaccount_id)" >> $GITHUB_OUTPUT 
-        echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT 
+        echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT
         echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" >> $GITHUB_OUTPUT 
+        echo 'cloudfoundry_org_id = "$(terraform output cloudfoundry_org_id)"' >> terraform.tfvars
+        echo 'cloudfoundry_space_id = "$(terraform output cloudfoundry_space_id)"' >> terraform.tfvars
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
       working-directory: terraform
       shell: bash
+    - name: Commit and push changes
+      run: |
+        git add -A
+        git config user.email "tfbtpbot@users.noreply.github.com"
+        git config user.name "[tf_btp bot] storage of cf info"
+        git diff --quiet && git diff --staged --quiet || git commit -m "[tf_btp bot] Store retrieved cloudfoundry metadata."
+        git push origin ${{ env.TARGET_BRANCH }}
+
 
   build-cap-application:
     name: Build CAP application
