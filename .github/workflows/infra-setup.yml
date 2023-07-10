@@ -29,10 +29,14 @@ jobs:
       working-directory: terraform
       shell: bash
       run: |
-        test -f $CF_METADATA_FILENAME && echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
+        if [ -f "$CF_METADATA_FILENAME" ]; then
+            echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
+        else 
+            echo "cf_metadatafile_exists=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
+        fi
 
   infrastructure1:
-    if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists != 'true'}}
+    if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists == 'false'}}
     name: Run Terraform script
     runs-on: ubuntu-latest
     needs: [check-if-cf-file-exists]
@@ -119,6 +123,7 @@ jobs:
       shell: bash
       run: |
         cd demo-app
+        cds add hana --for hybrid
         cds add mta
         mbt build -t gen --mtar mta.tar
         ls -l
@@ -155,4 +160,5 @@ jobs:
         cf target -o $CF_ORG_ID
         cf target -s '$CF_SPACE_ID'
         cd demo-app
-        cf deploy cpapp_1.0.0.mtar
+        cds deploy --to hana --profile hybrid
+        cf deploy gen/mta.tar
