@@ -152,7 +152,8 @@ jobs:
         CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
         CF_SPACE_ID: ${{needs.infrastructure1.outputs.cloudfoundry_space_id}}
         SUBACCOUNT_ID: ${{needs.infrastructure1.outputs.subaccount_id}}
-        SUBACCOUNT
+        SUBACCOUNT_NAME: ${{needs.infrastructure1.outputs.subaccount_name}}
+      run: |
         cd demo-app
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
