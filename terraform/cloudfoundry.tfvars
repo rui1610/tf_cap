@@ -1,2 +1,2 @@
-cloudfoundry_space_id = "3be8ab3a-91e8-4ae5-acfd-522bc1f45152"
-cloudfoundry_org_id = "6e9b5422-d7e0-44a9-a43a-c9d5c80e280e"
+cloudfoundry_space_id = "9e06044f-784b-4f5f-bfc4-86e69d7dfcdc"
+cloudfoundry_org_id = "1a920b5b-1f91-4112-89ee-69114c541206"
