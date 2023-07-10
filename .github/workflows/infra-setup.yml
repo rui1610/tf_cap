@@ -119,7 +119,8 @@ jobs:
       shell: bash
       run: |
         cd demo-app
-        mbt build -s ./
+        cds add mta
+        mbt build -t gen --mtar mta.tar
         ls -l
 
   deploy-cap-application:
