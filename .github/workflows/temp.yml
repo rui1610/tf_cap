@@ -38,9 +38,6 @@ jobs:
       cloudfoundry_space_id: ${{ steps.terraform_output.outputs.cloudfoundry_space_id }}
     steps:
     - name: Checkout Repo
-      uses: actions/checkout@v3
-      with:
-        ref: ${{ env.TARGET_BRANCH }}
       shell: bash
       run: |
         echo "${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists}}"
