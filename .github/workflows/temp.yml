@@ -34,7 +34,7 @@ jobs:
       subaccount_id: ${{ steps.terraform_output.outputs.subaccount_id }}
       subaccount_name: ${{ steps.terraform_output.outputs.subaccount_name }}
       cloudfoundry_space_id: ${{ steps.terraform_output.outputs.cloudfoundry_space_id }}
-    if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists}} == 'true'
+    if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists == 'true'}}
     name: Run Terraform script
     steps:
     - name: Checkout Repo
