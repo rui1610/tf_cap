@@ -129,6 +129,9 @@ jobs:
   deploy-cap-application:
     name: Deploy CAP application
     runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/rui1610/tf_cap:main
+      options: --user root    
     needs: [build-cap-application, infrastructure1]
     if: |
       (needs.build-cap-application.result == 'success' && needs.infrastructure1.result == 'skipped') || 
