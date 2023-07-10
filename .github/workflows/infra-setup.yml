@@ -29,7 +29,7 @@ jobs:
       working-directory: terraform
       shell: bash
       run: |
-        test -f $CF_METADATA_FILENAME && echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT
+        test -f $CF_METADATA_FILENAME && echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
 
   infrastructure1:
     if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists}} == "true"
@@ -51,6 +51,7 @@ jobs:
       shell: bash
       run: |
         echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
+        echo "Result of metadata file check: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}"
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
