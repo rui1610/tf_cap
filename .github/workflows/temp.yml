@@ -1,4 +1,4 @@
-name: Temp
+name: TEMP
 
 on:
   workflow_dispatch:
@@ -8,28 +8,47 @@ on:
     branches:
       - main
 
+env:
+  TARGET_BRANCH: main
+  CF_METADATA_FILENAME: cloudfoundry.tfvars
+
 # Taken from https://github.com/hashicorp/setup-terraform
 jobs:
-
-  build-cap-application:
-    name: Build CAP application
+  check-if-cf-file-exists:
+    name: Check if Cloudfoundry metadata is known
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/rui1610/tf_cap:main
-      options: --user root
+    outputs:
+      cf_metadatafile_exists: ${{ steps.cf_metadata_exists.outputs.cf_metadatafile_exists }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    - name: "Get repo folder in container"
+      with:
+        ref: ${{ env.TARGET_BRANCH }}
+    - name: Terraform Apply
+      id: cf_metadata_exists
+      working-directory: terraform
       shell: bash
       run: |
-        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
-    - name: 'Start build process for CAP app'
-      working-directory: ${{ env.REPO_NAME }}
+        test -f $CF_METADATA_FILENAME && echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
+
+  infrastructure1:
+    if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists}} == "true"
+    name: Run Terraform script
+    runs-on: ubuntu-latest
+    needs: [check-if-cf-file-exists]
+    outputs:
+      cloudfoundry_org_id: ${{ steps.terraform_output.outputs.cloudfoundry_org_id }}
+      subaccount_id: ${{ steps.terraform_output.outputs.subaccount_id }}
+      subaccount_name: ${{ steps.terraform_output.outputs.subaccount_name }}
+      cloudfoundry_space_id: ${{ steps.terraform_output.outputs.cloudfoundry_space_id }}
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ env.TARGET_BRANCH }}
       shell: bash
       run: |
-        pwd
-        cd demo-app
-        ls -l
-        mbt build -s ./
-        ls -l
+        echo "${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists}}"
+        echo ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists}}
+
+ 
