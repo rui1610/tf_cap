@@ -34,6 +34,10 @@ jobs:
         else 
             echo "cf_metadatafile_exists=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
         fi
+    - name: "Get repo folder in container"
+      shell: bash
+      run: |
+        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
 
   infrastructure1:
     if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists == 'false'}}
@@ -50,12 +54,6 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: ${{ env.TARGET_BRANCH }}
-
-    - name: "Get repo folder in container"
-      shell: bash
-      run: |
-        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
-        echo "Result of metadata file check: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}"
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
@@ -114,10 +112,10 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-    - name: "Get repo folder in container"
-      shell: bash
-      run: |
-        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
+#    - name: "Get repo folder in container"
+#      shell: bash
+#      run: |
+#        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
     - name: 'Start build process for CAP app'
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
@@ -135,16 +133,13 @@ jobs:
     if: |
       (needs.build-cap-application.result == 'success' && needs.infrastructure1.result == 'skipped') || 
       (needs.build-cap-application.result == 'success' && needs.infrastructure1.result == 'success')
-
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
-
-    - name: "Get repo folder in container"
-      shell: bash
-      run: |
-        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
-
+#    - name: "Get repo folder in container"
+#      shell: bash
+#      run: |
+#        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
     - name: 'Start build process for CAP app'
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
