@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: ${{ env.TARGET_BRANCH }}
-    - name: Terraform Apply
+    - name: Check existance of CF file
       id: cf_metadata_exists
       working-directory: terraform
       shell: bash
@@ -146,14 +146,14 @@ jobs:
         echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
 
     - name: 'Start build process for CAP app'
-      working-directory: ${{ env.REPO_NAME }}/demo-app
+      working-directory: ${{ env.REPO_NAME }}
       shell: bash
       env:
         CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
         CF_SPACE_ID: ${{needs.infrastructure1.outputs.cloudfoundry_space_id}}
         SUBACCOUNT_ID: ${{needs.infrastructure1.outputs.subaccount_id}}
-        SUBACCOUNT_NAME: ${{needs.infrastructure1.outputs.subaccount_name}}
-      run: |
+        SUBACCOUNT
+        cd demo-app
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
         cf target -o $CF_ORG_ID
