@@ -10,12 +10,31 @@ on:
 
 env:
   TARGET_BRANCH: main
+  CF_METADATA_FILENAME: cloudfoundry.tfvars
 
 # Taken from https://github.com/hashicorp/setup-terraform
 jobs:
+  check-if-cf-file-exists:
+    name: Check if Cloudfoundry metadata is known
+    outputs:
+      cloudfoundry_info_exists: ${{ steps.cf_metadata_exists.outputs.cf_metadatafile_exists }}
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ env.TARGET_BRANCH }}
+    - name: Terraform Apply
+      id: cf_metadata_exists
+      working-directory: terraform
+      shell: bash
+      run: |
+        test -f $CF_METADATA_FILENAME && echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT
+
   infrastructure1:
+    if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists}} == "true"
     name: Run Terraform script
     runs-on: ubuntu-latest
+    needs: [check-if-cf-file-exists]
     outputs:
       cloudfoundry_org_id: ${{ steps.terraform_output.outputs.cloudfoundry_org_id }}
       subaccount_id: ${{ steps.terraform_output.outputs.subaccount_id }}
@@ -63,9 +82,9 @@ jobs:
         echo "subaccount_id=$(terraform output subaccount_id)" >> $GITHUB_OUTPUT 
         echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT
         echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" >> $GITHUB_OUTPUT 
-        
-        echo "cloudfoundry_space_id = $(terraform output cloudfoundry_space_id)" > cloudfoundry.tfvars
-        echo "cloudfoundry_org_id = $(terraform output cloudfoundry_org_id)" >> cloudfoundry.tfvars
+
+        echo "cloudfoundry_space_id = $(terraform output cloudfoundry_space_id)" > $CF_METADATA_FILENAME
+        echo "cloudfoundry_org_id = $(terraform output cloudfoundry_org_id)" >> $CF_METADATA_FILENAME
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
@@ -79,7 +98,6 @@ jobs:
         git config user.name "[tf_btp bot] storage of cf info"
         git diff --quiet && git diff --staged --quiet || git commit -m "[tf_btp bot] Store retrieved cloudfoundry metadata."
         git push origin ${{ env.TARGET_BRANCH }}
-
 
   build-cap-application:
     name: Build CAP application
@@ -101,3 +119,32 @@ jobs:
         cd demo-app
         mbt build -s ./
         ls -l
+
+  deploy-cap-application:
+    name: Deploy CAP application
+    runs-on: ubuntu-latest
+    needs: [infrastructure1, build-cap-application]
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+
+    - name: "Get repo folder in container"
+      shell: bash
+      run: |
+        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
+
+    - name: 'Start build process for CAP app'
+      working-directory: ${{ env.REPO_NAME }}/demo-app
+      shell: bash
+      env:
+        CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
+        CF_SPACE_ID: ${{needs.infrastructure1.outputs.cloudfoundry_space_id}}
+        SUBACCOUNT_ID: ${{needs.infrastructure1.outputs.subaccount_id}}
+        SUBACCOUNT_NAME: ${{needs.infrastructure1.outputs.subaccount_name}}
+      run: |
+        cf api https://api.cf.us10.hana.ondemand.com
+        cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
+        cf target -o $CF_ORG_ID
+        cf target -s '$CF_SPACE_ID'
+        cd demo-app
+        cf deploy cpapp_1.0.0.mtar
