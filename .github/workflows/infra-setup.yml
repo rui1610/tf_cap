@@ -159,6 +159,5 @@ jobs:
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
         cf target -o $CF_ORG_ID
         cf target -s '$CF_SPACE_ID'
-        cd demo-app
         cds deploy --to hana --profile hybrid
         cf deploy gen/mta.tar
