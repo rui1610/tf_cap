@@ -16,6 +16,7 @@ env:
 jobs:
   check-if-cf-file-exists:
     name: Check if Cloudfoundry metadata is known
+    runs-on: ubuntu-latest
     outputs:
       cloudfoundry_info_exists: ${{ steps.cf_metadata_exists.outputs.cf_metadatafile_exists }}
     steps:
