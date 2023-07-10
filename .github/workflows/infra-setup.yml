@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+env:
+  TARGET_BRANCH: main
+
 # Taken from https://github.com/hashicorp/setup-terraform
 jobs:
   infrastructure1:
@@ -21,6 +24,9 @@ jobs:
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
+      with:
+        ref: ${{ env.TARGET_BRANCH }}
+
     - name: "Get repo folder in container"
       shell: bash
       run: |
@@ -41,7 +47,7 @@ jobs:
       id: terraform_apply
       run: terraform apply -auto-approve
       env:
-        TARGET_BRANCH: main
+        TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
         BTP_USERNAME: ${{ secrets.BTP_USERNAME }}
@@ -64,6 +70,7 @@ jobs:
         TF_ACTION_WORKING_DIR: 'terraform'
       working-directory: terraform
       shell: bash
+
     - name: Commit and push changes
       run: |
         git add -A
