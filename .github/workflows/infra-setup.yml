@@ -158,6 +158,6 @@ jobs:
         cd demo-app
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
-        cf target -o '$CF_ORG_NAME' -s '$CF_SPACE_ID'
+        cf target -o $CF_ORG_NAME -s $CF_SPACE_ID
         cds deploy --to hana --profile hybrid
         cf deploy gen/mta.tar
