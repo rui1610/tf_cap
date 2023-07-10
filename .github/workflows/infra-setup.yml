@@ -18,7 +18,7 @@ jobs:
     name: Check if Cloudfoundry metadata is known
     runs-on: ubuntu-latest
     outputs:
-      cloudfoundry_info_exists: ${{ steps.cf_metadata_exists.outputs.cf_metadatafile_exists }}
+      cf_metadatafile_exists: ${{ steps.cf_metadata_exists.outputs.cf_metadatafile_exists }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
