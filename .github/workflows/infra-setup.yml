@@ -63,8 +63,8 @@ jobs:
         echo "subaccount_id=$(terraform output subaccount_id)" >> $GITHUB_OUTPUT 
         echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT
         echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" >> $GITHUB_OUTPUT 
-        echo 'cloudfoundry_org_id = "$(terraform output cloudfoundry_org_id)"' >> terraform.tfvars
-        echo 'cloudfoundry_space_id = "$(terraform output cloudfoundry_space_id)"' >> terraform.tfvars
+        echo "cloudfoundry_org_id = $(terraform output cloudfoundry_org_id)" > cloudfoundry.tfvars
+        echo "cloudfoundry_space_id = $(terraform output cloudfoundry_space_id)" > cloudfoundry.tfvars
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
