@@ -18,6 +18,11 @@ output "cloudfoundry_org_id" {
   description = "The instance_name of the cf environment."
 }
 
+output "cloudfoundry_org_name" {
+  value       = module.cloudfoundry_environment.org_name
+  description = "The instance_name of the cf environment."
+}
+
 output "cloudfoundry_space_id" {
   value       = module.cloudfoundry_space.id
   description = "The cloudfoundry_space id."
