@@ -118,7 +118,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-if-cf-file-exists
     container:
-      image: ghcr.io/rui1610/tf_cap:main
+      image: ghcr.io/rui1610/tf_cap_build:main
       options: --user root
     steps:
     - name: Checkout Repo
@@ -141,7 +141,7 @@ jobs:
     name: Deploy CAP application
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/rui1610/tf_cap:main
+      image: ghcr.io/rui1610/tf_cap_build:main
       options: --user root    
     needs: [build-cap-application, infrastructure1]
     if: |

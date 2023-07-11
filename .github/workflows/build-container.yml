@@ -7,7 +7,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_BUILD_TOOLS: tf_cap_build
+  IMAGE_TF_PROVIDER: tf_cap_provider_btp
 
 jobs:
   build_and_push:
@@ -42,14 +43,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BUILD_TOOLS }}
 
       - name: Build Docker image
         uses: docker/build-push-action@v4.1.1
         with:
           context: .
           platforms: linux/amd64
-          file: ./config/Dockerfile
+          file: ./config/Dockerfile_build_tools
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
