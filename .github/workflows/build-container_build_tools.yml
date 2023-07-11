@@ -1,4 +1,4 @@
-name: Build + push docker image (build tool)
+name: Build, push docker image (build tools)
 
 on:
   release:
@@ -7,11 +7,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_BUILD_TOOLS: tf_cap_build
-  IMAGE_TF_PROVIDER: tf_cap_provider_btp
+  IMAGE_NAME: tf_cap_build
 
 jobs:
-  build_and_push_tools:
+  build_and_push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,7 +42,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_BUILD_TOOLS }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Build Docker image
         uses: docker/build-push-action@v4.1.1
@@ -51,6 +50,8 @@ jobs:
           context: .
           platforms: linux/amd64
           file: ./config/Dockerfile_build_tools
+          build-args: |
+            BTPSA_VERSION_GIT_ARG=${{ github.sha }}
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
