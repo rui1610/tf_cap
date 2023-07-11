@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: tf_cap_build
+  IMAGE_NAME: tf_cap
 
 jobs:
   build_and_push:
