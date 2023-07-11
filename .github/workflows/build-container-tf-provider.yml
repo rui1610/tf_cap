@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: tf_provider_btp
+  IMAGE_NAME: tf_btp
 
 jobs:
   build_and_push:
@@ -49,7 +49,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
-          file: ./config/Dockerfile_tf_provider
+          file: ./config/Dockerfile2
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
