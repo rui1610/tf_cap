@@ -49,9 +49,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
-          file: ./config/Dockerfile_tf_providers
-          build-args: |
-            BTPSA_VERSION_GIT_ARG=${{ github.sha }}
+          file: ./config/Dockerfile_tf_provider
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
