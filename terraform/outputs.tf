@@ -27,3 +27,8 @@ output "cloudfoundry_space_id" {
   value       = module.cloudfoundry_space.id
   description = "The cloudfoundry_space id."
 }
+
+output "cloudfoundry_space_name" {
+  value       = module.cloudfoundry_space.name
+  description = "The cloudfoundry_space id."
+}
