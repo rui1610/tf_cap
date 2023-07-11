@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: tf_btp
+  IMAGE_NAME: tf-btp
 
 jobs:
   build_and_push:
@@ -18,7 +18,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ github.event.release.commitish }}
+          ref: main
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
