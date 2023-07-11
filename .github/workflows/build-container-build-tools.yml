@@ -1,4 +1,4 @@
-name: Build, push docker image (build tools)
+name: Build and Push Docker Image (build tools)
 
 on:
   release:
@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: tf_cap
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
   build_and_push:
@@ -49,9 +49,7 @@ jobs:
         with:
           context: .
           platforms: linux/amd64
-          file: ./config/Dockerfile_build_tools
-          build-args: |
-            BTPSA_VERSION_GIT_ARG=${{ github.sha }}
+          file: ./config/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
