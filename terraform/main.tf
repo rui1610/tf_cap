@@ -32,7 +32,6 @@ module "cloudfoundry_environment" {
   cloudfoundry_org_name = replace(local.uuid, "-", "")
 }
 
-
 ###
 # Create Cloud Foundry space and assign users
 ###
@@ -45,15 +44,68 @@ module "cloudfoundry_space" {
   cf_space_auditors   = var.app_admins
 }
 
-
-resource "btp_subaccount_entitlement" "entitlements" {
-
-  for_each   = {
-    for index, entitlement in var.entitlements:
-    index => entitlement
-  }
-
+resource "btp_subaccount_entitlement" "hana_cloud" {
   subaccount_id = btp_subaccount.project.id
-  service_name  = each.value.name
-  plan_name     = each.value.plan
+  service_name  = "hana-cloud"
+  plan_name     = "hana-free"
+}
+
+resource "btp_subaccount_entitlement" "hana" {
+  subaccount_id = btp_subaccount.project.id
+  service_name  = "hana"
+  plan_name     = "hdi-shared"
+}
+
+data "btp_subaccount_service_plan" "by_name_hana_cloud" {
+  subaccount_id = btp_subaccount.project.id
+  offering_name = "hana-cloud"
+  name          = "hana-free"
+}
+
+resource "btp_subaccount_service_instance" "hana-cloud-hana-free" {
+  subaccount_id  = btp_subaccount.project.id
+  # The service plan ID can be looked up via the data source btp_subaccount_service_plan
+  serviceplan_id = btp_subaccount_service_plan.by_name_hana_cloud.id
+  name           = "my-hana-cloud-instance"
+  parameters = jsonencode({
+    data = {
+      edition   = "cloud"
+      memory = 30
+      serviceStopped = false
+      storage = 120
+      systempassword = "PleaseChangeBeforeRunningScript12345"
+      vcpu = 2
+      versionIndicator = ""
+      whitelistIPs = ["0.0.0.0/0"]
+    }
+  })
+        #"data": {
+        #  "edition": "cloud",
+        #  "memory": 30,
+        #  "serviceStopped": false,
+        #  "storage": 120,
+        #  "systempassword": "PleaseChangeBeforeRunningScript12345",
+        #  "vcpu": 2,
+        #  "versionIndicator": "",
+        #  "whitelistIPs": [
+        #   "0.0.0.0/0"
+        #  ]
+        #}
+}
+
+data "btp_subaccount_service_plan" "by_name_hana" {
+  subaccount_id = btp_subaccount.project.id
+  offering_name = "hana"
+  name          = "hdi-shared"
+}
+
+resource "btp_subaccount_service_instance" "hana-hdi-shared" {
+  subaccount_id  = btp_subaccount.project.id
+  # The service plan ID can be looked up via the data source btp_subaccount_service_plan
+  serviceplan_id = btp_subaccount_service_plan.by_name_hana.id
+  name           = "my-hana-hdi-shared-instance"
+  parameters = jsonencode({
+    xsappname   = "my-application"
+    tenant-mode = "dedicated"
+  })
 }
