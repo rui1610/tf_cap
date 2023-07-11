@@ -127,7 +127,7 @@ jobs:
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
       run: |
-        cd demo-app
+        cd app
         cds add hana --for hybrid
         cds add mta
         mbt build -t gen --mtar mta.tar
@@ -158,7 +158,7 @@ jobs:
         CF_ORG_NAME_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_org_name}}
         CF_SPACE_ID_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_space_id}}
       run: |
-        cd demo-app
+        cd app
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
         if [ -f "$CF_METADATA_FILENAME" ]; then

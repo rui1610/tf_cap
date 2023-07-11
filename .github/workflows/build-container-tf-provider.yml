@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: tf-btp
+  IMAGE_NAME: ${{ github.repository }}-tf
 
 jobs:
   build_and_push:
