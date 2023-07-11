@@ -30,7 +30,7 @@ jobs:
       run: |
         if [ -f "$CF_METADATA_FILENAME" ]; then
             echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
-            export $(echo $(cat .tfvars | sed 's/#.*//g'| xargs) | envsubst)
+            source "$CF_METADATA_FILENAME"
             echo "$cloudfoundry_org_id"
         else 
             echo "cf_metadatafile_exists=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
