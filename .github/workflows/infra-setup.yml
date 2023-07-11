@@ -57,6 +57,7 @@ jobs:
       subaccount_id: ${{ steps.terraform_output.outputs.subaccount_id }}
       subaccount_name: ${{ steps.terraform_output.outputs.subaccount_name }}
       cloudfoundry_space_id: ${{ steps.terraform_output.outputs.cloudfoundry_space_id }}
+      cloudfoundry_space_name: ${{ steps.terraform_output.outputs.cloudfoundry_space_name }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -95,8 +96,10 @@ jobs:
         echo "subaccount_id=$(terraform output subaccount_id)" >> $GITHUB_OUTPUT 
         echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT
         echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" >> $GITHUB_OUTPUT 
+        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_id)" >> $GITHUB_OUTPUT 
 
         echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" > $CF_METADATA_FILENAME
+        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" > $CF_METADATA_FILENAME
         echo "cloudfoundry_org_id=$(terraform output cloudfoundry_org_id)" >> $CF_METADATA_FILENAME
         echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" >> $CF_METADATA_FILENAME
       env:
@@ -118,7 +121,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: check-if-cf-file-exists
     container:
-      image: ghcr.io/rui1610/tf_cap:main
+      image: ghcr.io/rui1610/tf_cap-tools:main
       options: --user root
     steps:
     - name: Checkout Repo
@@ -137,7 +140,7 @@ jobs:
     name: Deploy CAP application
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/rui1610/tf_cap:main
+      image: ghcr.io/rui1610/tf_cap-tools:main
       options: --user root    
     needs: [build-cap-application, infrastructure1]
     if: |
@@ -154,17 +157,19 @@ jobs:
         CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
         CF_ORG_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_org_name}}
         CF_SPACE_ID: ${{needs.infrastructure1.outputs.cloudfoundry_space_id}}
+        CF_SPACE_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_space_name}}
         CF_ORG_ID_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_org_id}}
         CF_ORG_NAME_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_org_name}}
         CF_SPACE_ID_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_space_id}}
+        CF_SPACE_NAME_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_space_name}}
       run: |
         cd app
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
         if [ -f "$CF_METADATA_FILENAME" ]; then
-          cf target -o $CF_ORG_NAME_FILE -s development
+          cf target -o $CF_ORG_NAME_FILE -s $CF_SPACE_NAME_FILE
         else 
-          cf target -o $CF_ORG_NAME -s development
+          cf target -o $CF_ORG_NAME -s $CF_SPACE_NAME
         fi
         cds deploy --to hana --profile hybrid
         cf deploy gen/mta.tar
