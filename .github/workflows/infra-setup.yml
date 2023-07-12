@@ -20,8 +20,6 @@ jobs:
     outputs:
       cf_metadatafile_exists: ${{ steps.cf_metadata_exists.outputs.cf_metadatafile_exists }}
       cloudfoundry_org_name: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_org_name }}
-#      cloudfoundry_org_id: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_org_id }}
-#      cloudfoundry_space_id: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_space_id }}
       cloudfoundry_space_name: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_space_name }}
     steps:
     - name: Checkout Repo
@@ -37,14 +35,8 @@ jobs:
             echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
             source "$CF_METADATA_FILENAME"
             echo "cloudfoundry_org_name  =$cloudfoundry_org_name"
-#            echo "cloudfoundry_org_id    =$cloudfoundry_org_id"  
-#            echo "cloudfoundry_space_id  =$cloudfoundry_space_id" 
             echo "cloudfoundry_space_name=$cloudfoundry_space_name" 
-
-
             echo "cloudfoundry_org_name=$cloudfoundry_org_name" >> $GITHUB_OUTPUT 
-#            echo "cloudfoundry_org_id=$cloudfoundry_org_id" >> $GITHUB_OUTPUT 
-#            echo "cloudfoundry_space_id=$cloudfoundry_space_id" >> $GITHUB_OUTPUT 
             echo "cloudfoundry_space_name=$cloudfoundry_space_name" >> $GITHUB_OUTPUT 
         else 
             echo "cf_metadatafile_exists=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
@@ -61,10 +53,6 @@ jobs:
     needs: [check-if-cf-file-exists]
     outputs:
       cloudfoundry_org_name: ${{ steps.terraform_output.outputs.cloudfoundry_org_name }}
-#      cloudfoundry_org_id: ${{ steps.terraform_output.outputs.cloudfoundry_org_id }}
-#      subaccount_id: ${{ steps.terraform_output.outputs.subaccount_id }}
-#      subaccount_name: ${{ steps.terraform_output.outputs.subaccount_name }}
-#      cloudfoundry_space_id: ${{ steps.terraform_output.outputs.cloudfoundry_space_id }}
       cloudfoundry_space_name: ${{ steps.terraform_output.outputs.cloudfoundry_space_name }}
     steps:
     - name: Checkout Repo
@@ -100,16 +88,9 @@ jobs:
       id: terraform_output
       run: |
         echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" >> $GITHUB_OUTPUT 
-#        echo "cloudfoundry_org_id=$(terraform output cloudfoundry_org_id)" >> $GITHUB_OUTPUT 
-#        echo "subaccount_id=$(terraform output subaccount_id)" >> $GITHUB_OUTPUT 
-#        echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT
-#        echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" >> $GITHUB_OUTPUT 
         echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" >> $GITHUB_OUTPUT 
-
         echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" >> $CF_METADATA_FILENAME
-#        echo "cloudfoundry_org_id=$(terraform output cloudfoundry_org_id)" >> $CF_METADATA_FILENAME
         echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" > $CF_METADATA_FILENAME
-#        echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" > $CF_METADATA_FILENAME
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
@@ -162,15 +143,9 @@ jobs:
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
       env:
-#        SUBACCOUNT_ID: ${{needs.infrastructure1.outputs.subaccount_id}}
-#        SUBACCOUNT_NAME: ${{needs.infrastructure1.outputs.subaccount_name}}
-#        CF_ORG_ID: ${{needs.infrastructure1.outputs.cloudfoundry_org_id}}
         CF_ORG_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_org_name}}
-#        CF_SPACE_ID: ${{needs.infrastructure1.outputs.cloudfoundry_space_id}}
         CF_SPACE_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_space_name}}
-#        CF_ORG_ID_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_org_id}}
         CF_ORG_NAME_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_org_name}}
-#        CF_SPACE_ID_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_space_id}}
         CF_SPACE_NAME_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_space_name}}
       run: |
         cd app
