@@ -106,7 +106,7 @@ jobs:
         git push origin ${{ env.TARGET_BRANCH }}
 
   deploy-cap-application:
-    name: Deploy CAP application
+    name: Build + deploy CAP app
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/rui1610/tf_cap-tools:main
