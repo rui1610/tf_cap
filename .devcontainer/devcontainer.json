@@ -4,7 +4,6 @@
     "image": "ghcr.io/rui1610/tf_cap-tf:main",
     "customizations": {},
     "workspaceFolder": "/home/user",
-	"postCreateCommand": "cp ./config/tfprovider/provider-config-local.txt ~/.terraformrc",
 	"hostRequirements": {
 		"memory": "4gb"
 	},
