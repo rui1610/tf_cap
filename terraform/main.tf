@@ -59,6 +59,13 @@ module "add_entitlements" {
     service_plan_name       = each.value.plan_name
 }
 
+module "add_hana_cloud_hana" {
+  source      = "./hana_cloud/"
+  cf_space_id = module.cloudfoundry_space.id
+  depends_on = [module.add_entitlements, module.cloudfoundry_space]
+}
+
+
 /*
 parameters for hana-cloud and hana service plan
 {
