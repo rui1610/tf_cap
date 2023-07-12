@@ -60,6 +60,18 @@ module "add_entitlements" {
 }
 
 /*
+parameters for hana-cloud and hana service plan
+{
+    "data": {
+        "memory": 30,
+        "edition": "cloud",
+        "systempassword": "Abcd1234"
+    }
+}
+*/
+
+
+/*
 data "cloudfoundry_service" "hana" {
   name = "hana"
 }
