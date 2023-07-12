@@ -153,11 +153,12 @@ jobs:
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
 
         if [ -f "$CF_METADATA_FILENAME" ]; then
+          source "$CF_METADATA_FILENAME"
 
-          echo "CF ORG NAME FILE  : $CF_ORG_NAME_FILE"
-          echo "CF SPACE NAME FILE: $CF_SPACE_NAME_FILE"
-          cf target -o $CF_ORG_NAME_FILE
-          cf target -s $CF_SPACE_NAME_FILE
+          echo "CF ORG NAME FILE  : $cloudfoundry_org_name"
+          echo "CF SPACE NAME FILE: $cloudfoundry_space_name"
+          cf target -o $cloudfoundry_org_name
+          cf target -s $cloudfoundry_space_name
         else 
           echo "CF ORG NAME       : $CF_ORG_NAME"
           echo "CF SPACE NAME     : $CF_SPACE_NAME"
