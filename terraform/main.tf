@@ -55,17 +55,60 @@ resource "btp_subaccount_entitlement" "hana" {
   service_name  = "hana"
   plan_name     = "hdi-shared"
 }
+/*
+data "cloudfoundry_service" "hana" {
+  name = "hana"
+}
+
+data "cloudfoundry_service" "hana-cloud" {
+  name = "hana-cloud"
+}
+
+
+resource "cloudfoundry_service_instance" "hana" {
+  name         = "helloterraform-xsuaa"
+  space        = data.cloudfoundry_space.dev.id
+  service_plan = data.cloudfoundry_service.xsuaa.service_plans["application"]
+  json_params = jsonencode({
+    xsappname   = "helloterraform-${random_id.suffix.hex}"
+    tenant-mode = "shared"
+    scopes = [
+      {
+        name        = "helloterraform-${random_id.suffix.hex}.Display"
+        description = "Display"
+      },
+    ]
+    role-templates = [
+      {
+        name        = "Viewer"
+        description = ""
+        scope-references = [
+          "helloterraform-${random_id.suffix.hex}.Display"
+        ]
+      }
+    ]
+  })
+}
+
+
+data "btp_subaccount_service_plan" "by_name_hana" {
+  subaccount_id = btp_subaccount.project.id
+  offering_name = "hana"
+  name          = "hdi-shared"
+  depends_on    = btp_subaccount_entitlement.hana
+}
 
 data "btp_subaccount_service_plan" "by_name_hana_cloud" {
   subaccount_id = btp_subaccount.project.id
   offering_name = "hana-cloud"
   name          = "hana-free"
+  depends_on    = btp_subaccount_entitlement.hana_cloud
 }
 
 resource "btp_subaccount_service_instance" "hana-cloud-hana-free" {
   subaccount_id  = btp_subaccount.project.id
   # The service plan ID can be looked up via the data source btp_subaccount_service_plan
-  serviceplan_id = btp_subaccount_service_plan.by_name_hana_cloud.id
+  serviceplan_id = data.btp_subaccount_service_plan.by_name_hana_cloud.id
   name           = "my-hana-cloud-instance"
   parameters = jsonencode({
     data = {
@@ -93,19 +136,16 @@ resource "btp_subaccount_service_instance" "hana-cloud-hana-free" {
         #}
 }
 
-data "btp_subaccount_service_plan" "by_name_hana" {
-  subaccount_id = btp_subaccount.project.id
-  offering_name = "hana"
-  name          = "hdi-shared"
-}
+
 
 resource "btp_subaccount_service_instance" "hana-hdi-shared" {
   subaccount_id  = btp_subaccount.project.id
   # The service plan ID can be looked up via the data source btp_subaccount_service_plan
-  serviceplan_id = btp_subaccount_service_plan.by_name_hana.id
+  serviceplan_id = data.btp_subaccount_service_plan.by_name_hana.id
   name           = "my-hana-hdi-shared-instance"
   parameters = jsonencode({
     xsappname   = "my-application"
     tenant-mode = "dedicated"
   })
 }
+*/
