@@ -136,13 +136,27 @@ jobs:
         mbt build -t gen --mtar mta.tar
         ls -l
 
+  temp:
+    name: Deploy CAP application
+    id: temp
+    runs-on: ubuntu-latest
+    needs: [build-cap-application, infrastructure1]
+    steps:
+    - name: 'Output state results of jobs'
+      shell: bash
+      run: |
+        echo ${{needs.build-cap-application.result}}
+        echo ${{needs.infrastructure1.result}}
+
+
   deploy-cap-application:
     name: Deploy CAP application
     runs-on: ubuntu-latest
     container:
       image: ghcr.io/rui1610/tf_cap-tools:main
       options: --user root    
-    needs: [build-cap-application, infrastructure1]
+    #needs: [build-cap-application, infrastructure1]
+    needs: [temp]
     if: ${{ needs.build-cap-application.result == 'success' && (needs.infrastructure1.result == 'skipped' || needs.infrastructure1.result == 'success') }}
     steps:
     - name: Checkout Repo
