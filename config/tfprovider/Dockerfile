@@ -58,7 +58,7 @@ RUN git clone https://github.com/SAP/terraform-provider-btp.git \
     && cd terraform-provider-btp\
     && make install
 
-COPY --chown=$USERNAME:$USERNAME config/tfprovider/provider-config-local.txt      ~/.terraformrc
+COPY --chown=$USERNAME:$USERNAME config/tfprovider/provider-config-local.txt      $HOME_FOLDER/.terraformrc
 
 # Customize the prompt
 ENV PS1 "\[\e]0;\w\a\]\[\033[33;1m\]btp-setup-automator: \[\033[36m\]\$(basename \w) \$\[\033[m\] "
