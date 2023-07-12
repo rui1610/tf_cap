@@ -105,13 +105,16 @@ jobs:
         git diff --quiet && git diff --staged --quiet || git commit -m "[tf_btp bot] Store retrieved cloudfoundry metadata."
         git push origin ${{ env.TARGET_BRANCH }}
 
-  build-cap-application:
-    name: Build CAP application
+  deploy-cap-application:
+    name: Deploy CAP application
     runs-on: ubuntu-latest
-    needs: check-if-cf-file-exists
     container:
       image: ghcr.io/rui1610/tf_cap-tools:main
-      options: --user root
+      options: --user root    
+    needs: [build-cap-application, infrastructure1]
+    if: |
+        always() &&
+        (needs.infrastructure1.result == 'skipped' || needs.infrastructure1.result == 'success')    
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -123,24 +126,9 @@ jobs:
         cds add hana --for hybrid
         cds add mta
         mbt build -t gen --mtar mta.tar
-        ls -l
-
-  deploy-cap-application:
-    name: Deploy CAP application
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/rui1610/tf_cap-tools:main
-      options: --user root    
-    needs: [build-cap-application, infrastructure1]
-    if: |
-        always() &&
-        needs.build-cap-application.result == 'success' && 
-        (needs.infrastructure1.result == 'skipped' || needs.infrastructure1.result == 'success')    
-    steps:
-    - name: Checkout Repo
-      uses: actions/checkout@v3
-    - name: 'Start build process for CAP app'
-      working-directory: ${{ env.REPO_NAME }}/terraform
+        ls -l      
+    - name: 'Start deploy process for CAP app'
+      working-directory: ${{ env.REPO_NAME }}
       shell: bash
       env:
         CF_ORG_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_org_name}}
@@ -148,10 +136,9 @@ jobs:
         CF_ORG_NAME_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_org_name}}
         CF_SPACE_NAME_FILE: ${{needs.check-if-cf-file-exists.outputs.cloudfoundry_space_name}}
       run: |
-        cd app
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
-
+        cd terraform
         if [ -f "$CF_METADATA_FILENAME" ]; then
           source "$CF_METADATA_FILENAME"
 
@@ -165,5 +152,6 @@ jobs:
           cf target -o $CF_ORG_NAME
           cf target -s $CF_SPACE_NAME
         fi
+        cd ../app
         cds deploy --to hana --profile hybrid
         cf deploy gen/mta.tar
