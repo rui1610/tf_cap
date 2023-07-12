@@ -44,17 +44,17 @@ module "cloudfoundry_space" {
   cf_space_auditors   = var.app_admins
 }
 
-resource "btp_subaccount_entitlement" "hana_cloud" {
-  subaccount_id = btp_subaccount.project.id
-  service_name  = "hana-cloud"
-  plan_name     = "hana-free"
+###
+# Call module for creating entitlements
+###
+module "add_entitlements" {
+  for_each = toset("${var.entitlements}")
+    source    = "./add_entitlement/"
+    subaccount_id           = btp_subaccount.project.id
+    service_name            = each.value.name
+    service_plan_name       = each.value.plan
 }
 
-resource "btp_subaccount_entitlement" "hana" {
-  subaccount_id = btp_subaccount.project.id
-  service_name  = "hana"
-  plan_name     = "hdi-shared"
-}
 /*
 data "cloudfoundry_service" "hana" {
   name = "hana"

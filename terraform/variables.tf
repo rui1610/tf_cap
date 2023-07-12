@@ -15,3 +15,22 @@ variable "app_admins" {
   description = "Defines the administrators for the sub account and app."
   default     = ["rui.nogueira@sap.com","jeremias.roessler@sap.com"]
 }
+
+variable "entitlements" {
+  description = "List of entitlements for a BTP subaccount"
+    type = list(object({
+      name = string
+      plan = string
+  }))
+
+  default = [
+    {
+      name = "hana-cloud"
+      plan = "hana"
+    },
+    {
+      name = "hana"
+      plan = "hdi-shared"
+    }
+  ]
+}
