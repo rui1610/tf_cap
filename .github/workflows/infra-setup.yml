@@ -111,7 +111,7 @@ jobs:
     container:
       image: ghcr.io/rui1610/tf_cap-tools:main
       options: --user root    
-    needs: [build-cap-application, infrastructure1]
+    needs: infrastructure1
     if: |
         always() &&
         (needs.infrastructure1.result == 'skipped' || needs.infrastructure1.result == 'success')    
