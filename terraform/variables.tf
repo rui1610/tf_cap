@@ -17,20 +17,22 @@ variable "app_admins" {
 }
 
 variable "entitlements" {
-  description = "List of entitlements for a BTP subaccount"
-    type = list(object({
-      name = string
-      plan = string
+  type = list(object({
+      service_name = string
+      plan_name    = string
   }))
+  description = "List of entitlements for a BTP subaccount"
 
   default = [
     {
-      name = "hana-cloud"
-      plan = "hana"
+      service_name = "hana-cloud"
+      plan_name    = "hana"
     },
     {
-      name = "hana"
-      plan = "hdi-shared"
+    service_name = "hana"
+     plan_name    = "hdi-shared"
     }
   ]
+
+
 }

@@ -48,11 +48,15 @@ module "cloudfoundry_space" {
 # Call module for creating entitlements
 ###
 module "add_entitlements" {
-  for_each = toset("${var.entitlements}")
+  for_each   = {
+    for index, entitlement in var.entitlements:
+    index => entitlement
+  }
+
     source    = "./add_entitlement/"
     subaccount_id           = btp_subaccount.project.id
-    service_name            = each.value.name
-    service_plan_name       = each.value.plan
+    service_name            = each.value.service_name
+    service_plan_name       = each.value.plan_name
 }
 
 /*
