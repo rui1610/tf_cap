@@ -140,7 +140,7 @@ jobs:
     - name: Checkout Repo
       uses: actions/checkout@v3
     - name: 'Start build process for CAP app'
-      working-directory: ${{ env.REPO_NAME }}
+      working-directory: ${{ env.REPO_NAME }}/terraform
       shell: bash
       env:
         CF_ORG_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_org_name}}
