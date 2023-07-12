@@ -38,6 +38,7 @@ jobs:
             echo "cloudfoundry_org_name=$cloudfoundry_org_name" >> $GITHUB_OUTPUT 
             echo "cloudfoundry_org_id=$cloudfoundry_org_id" >> $GITHUB_OUTPUT 
             echo "cloudfoundry_space_id=$cloudfoundry_space_id" >> $GITHUB_OUTPUT 
+            echo "cloudfoundry_space_name=$cloudfoundry_space_name" >> $GITHUB_OUTPUT 
         else 
             echo "cf_metadatafile_exists=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
         fi
@@ -155,9 +156,10 @@ jobs:
     container:
       image: ghcr.io/rui1610/tf_cap-tools:main
       options: --user root    
-    #needs: [build-cap-application, infrastructure1]
+    needs: [build-cap-application, infrastructure1]
     needs: [temp]
-    if: ${{ needs.build-cap-application.result == 'success' && (needs.infrastructure1.result == 'skipped' || needs.infrastructure1.result == 'success') }}
+    #if: ${{ needs.build-cap-application.result == 'success' && (needs.infrastructure1.result == 'skipped' || needs.infrastructure1.result == 'success') }}
+    if: ${{ always() && (success() || skipped()) }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
