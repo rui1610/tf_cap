@@ -169,10 +169,17 @@ jobs:
         cd app
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
+        echo "CF ORG NAME       : $CF_ORG_NAME"
+        echo "CF ORG NAME FILE  : $CF_ORG_NAME_FILE"
+        echo "CF SPACE NAME     : $CF_SPACE_NAME"
+        echo "CF SPACE NAME FILE: $CF_SPACE_NAME_FILE"
+
         if [ -f "$CF_METADATA_FILENAME" ]; then
-          cf target -o $CF_ORG_NAME_FILE -s $CF_SPACE_NAME_FILE
+          cf target -o '$CF_ORG_NAME_FILE' 
+          cf target -s '$CF_SPACE_NAME_FILE'
         else 
-          cf target -o $CF_ORG_NAME -s $CF_SPACE_NAME
+          cf target -o '$CF_ORG_NAME' 
+          cf target -s '$CF_SPACE_NAME'
         fi
         cds deploy --to hana --profile hybrid
         cf deploy gen/mta.tar
