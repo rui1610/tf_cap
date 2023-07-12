@@ -87,10 +87,10 @@ jobs:
     - name: Terraform Output
       id: terraform_output
       run: |
-        echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" >> $GITHUB_OUTPUT 
-        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" >> $GITHUB_OUTPUT 
-        echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" >> $CF_METADATA_FILENAME
-        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" > $CF_METADATA_FILENAME
+        echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" >> $GITHUB_OUTPUT
+        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" >> $GITHUB_OUTPUT
+        echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" > $CF_METADATA_FILENAME
+        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" >> $CF_METADATA_FILENAME
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform'
@@ -156,13 +156,13 @@ jobs:
 
           echo "CF ORG NAME FILE  : $CF_ORG_NAME_FILE"
           echo "CF SPACE NAME FILE: $CF_SPACE_NAME_FILE"
-          cf target -o '$CF_ORG_NAME_FILE' 
-          cf target -s '$CF_SPACE_NAME_FILE'
+          cf target -o $CF_ORG_NAME_FILE
+          cf target -s $CF_SPACE_NAME_FILE
         else 
           echo "CF ORG NAME       : $CF_ORG_NAME"
           echo "CF SPACE NAME     : $CF_SPACE_NAME"
-          cf target -o '$CF_ORG_NAME' 
-          cf target -s '$CF_SPACE_NAME'
+          cf target -o $CF_ORG_NAME
+          cf target -s $CF_SPACE_NAME
         fi
         cds deploy --to hana --profile hybrid
         cf deploy gen/mta.tar
