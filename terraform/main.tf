@@ -44,131 +44,32 @@ module "cloudfoundry_space" {
   cf_space_auditors   = var.app_admins
 }
 
-###
-# Call module for creating entitlements
-###
-module "add_entitlements" {
-  for_each   = {
-    for index, entitlement in var.entitlements:
-    index => entitlement
-  }
+resource "time_sleep" "wait_30_seconds" {
+  create_duration = "30s"
+}
 
-    source    = "./add_entitlement/"
-    subaccount_id           = btp_subaccount.project.id
-    service_name            = each.value.service_name
-    service_plan_name       = each.value.plan_name
+resource "btp_subaccount_entitlement" "hana_cloud_hana" {
+  subaccount_id = btp_subaccount.project.id
+  service_name  = "hana-cloud"
+  plan_name     = "hana"
+  depends_on    = [time_sleep.wait_30_seconds]
 }
 
 module "add_hana_cloud_hana" {
-  source      = "./hana_cloud/"
-  cf_space_id = module.cloudfoundry_space.id
-  depends_on = [module.add_entitlements, module.cloudfoundry_space]
+  source          = "./hana_cloud/"
+  cf_space_id     = module.cloudfoundry_space.id
+  depends_on      = [btp_subaccount_entitlement.hana_cloud_hana, module.cloudfoundry_space]
 }
 
-
-/*
-parameters for hana-cloud and hana service plan
-{
-    "data": {
-        "memory": 30,
-        "edition": "cloud",
-        "systempassword": "Abcd1234"
-    }
-}
-*/
-
-
-/*
-data "cloudfoundry_service" "hana" {
-  name = "hana"
-}
-
-data "cloudfoundry_service" "hana-cloud" {
-  name = "hana-cloud"
-}
-
-
-resource "cloudfoundry_service_instance" "hana" {
-  name         = "helloterraform-xsuaa"
-  space        = data.cloudfoundry_space.dev.id
-  service_plan = data.cloudfoundry_service.xsuaa.service_plans["application"]
-  json_params = jsonencode({
-    xsappname   = "helloterraform-${random_id.suffix.hex}"
-    tenant-mode = "shared"
-    scopes = [
-      {
-        name        = "helloterraform-${random_id.suffix.hex}.Display"
-        description = "Display"
-      },
-    ]
-    role-templates = [
-      {
-        name        = "Viewer"
-        description = ""
-        scope-references = [
-          "helloterraform-${random_id.suffix.hex}.Display"
-        ]
-      }
-    ]
-  })
-}
-
-
-data "btp_subaccount_service_plan" "by_name_hana" {
+resource "btp_subaccount_entitlement" "hana_hdi_shared" {
   subaccount_id = btp_subaccount.project.id
-  offering_name = "hana"
-  name          = "hdi-shared"
-  depends_on    = btp_subaccount_entitlement.hana
+  service_name  = "hana"
+  plan_name     = "hdi-shared"
+  depends_on    = [time_sleep.wait_30_seconds]
 }
 
-data "btp_subaccount_service_plan" "by_name_hana_cloud" {
-  subaccount_id = btp_subaccount.project.id
-  offering_name = "hana-cloud"
-  name          = "hana-free"
-  depends_on    = btp_subaccount_entitlement.hana_cloud
+module "add_hana_hdi-shared" {
+  source          = "./hana_cloud/"
+  cf_space_id     = module.cloudfoundry_space.id
+  depends_on      = [btp_subaccount_entitlement.hana_cloud_hana]
 }
-
-resource "btp_subaccount_service_instance" "hana-cloud-hana-free" {
-  subaccount_id  = btp_subaccount.project.id
-  # The service plan ID can be looked up via the data source btp_subaccount_service_plan
-  serviceplan_id = data.btp_subaccount_service_plan.by_name_hana_cloud.id
-  name           = "my-hana-cloud-instance"
-  parameters = jsonencode({
-    data = {
-      edition   = "cloud"
-      memory = 30
-      serviceStopped = false
-      storage = 120
-      systempassword = "PleaseChangeBeforeRunningScript12345"
-      vcpu = 2
-      versionIndicator = ""
-      whitelistIPs = ["0.0.0.0/0"]
-    }
-  })
-        #"data": {
-        #  "edition": "cloud",
-        #  "memory": 30,
-        #  "serviceStopped": false,
-        #  "storage": 120,
-        #  "systempassword": "PleaseChangeBeforeRunningScript12345",
-        #  "vcpu": 2,
-        #  "versionIndicator": "",
-        #  "whitelistIPs": [
-        #   "0.0.0.0/0"
-        #  ]
-        #}
-}
-
-
-
-resource "btp_subaccount_service_instance" "hana-hdi-shared" {
-  subaccount_id  = btp_subaccount.project.id
-  # The service plan ID can be looked up via the data source btp_subaccount_service_plan
-  serviceplan_id = data.btp_subaccount_service_plan.by_name_hana.id
-  name           = "my-hana-hdi-shared-instance"
-  parameters = jsonencode({
-    xsappname   = "my-application"
-    tenant-mode = "dedicated"
-  })
-}
-*/
