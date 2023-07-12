@@ -144,7 +144,10 @@ jobs:
       image: ghcr.io/rui1610/tf_cap-tools:main
       options: --user root    
     needs: [build-cap-application, infrastructure1]
-    if: ${{ always()}} && ${{needs.build-cap-application.result == 'success'}} && ( ${{needs.infrastructure1.result == 'skipped'}} || ${{needs.infrastructure1.result == 'success'}} )
+    if: |
+        always() &&
+        needs.build-cap-application.result == 'success' && 
+        (needs.infrastructure1.result == 'skipped' || needs.infrastructure1.result == 'success')    
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
