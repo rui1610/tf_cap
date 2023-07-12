@@ -22,6 +22,7 @@ jobs:
       cloudfoundry_org_name: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_org_name }}
       cloudfoundry_org_id: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_org_id }}
       cloudfoundry_space_id: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_space_id }}
+      cloudfoundry_space_name: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_space_name }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -97,7 +98,7 @@ jobs:
         echo "subaccount_id=$(terraform output subaccount_id)" >> $GITHUB_OUTPUT 
         echo "subaccount_name=$(terraform output subaccount_name)" >> $GITHUB_OUTPUT
         echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" >> $GITHUB_OUTPUT 
-        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_id)" >> $GITHUB_OUTPUT 
+        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" >> $GITHUB_OUTPUT 
 
         echo "cloudfoundry_space_id=$(terraform output cloudfoundry_space_id)" > $CF_METADATA_FILENAME
         echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" > $CF_METADATA_FILENAME
@@ -169,15 +170,16 @@ jobs:
         cd app
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
-        echo "CF ORG NAME       : $CF_ORG_NAME"
-        echo "CF ORG NAME FILE  : $CF_ORG_NAME_FILE"
-        echo "CF SPACE NAME     : $CF_SPACE_NAME"
-        echo "CF SPACE NAME FILE: $CF_SPACE_NAME_FILE"
 
         if [ -f "$CF_METADATA_FILENAME" ]; then
+
+          echo "CF ORG NAME FILE  : $CF_ORG_NAME_FILE"
+          echo "CF SPACE NAME FILE: $CF_SPACE_NAME_FILE"
           cf target -o '$CF_ORG_NAME_FILE' 
           cf target -s '$CF_SPACE_NAME_FILE'
         else 
+          echo "CF ORG NAME       : $CF_ORG_NAME"
+          echo "CF SPACE NAME     : $CF_SPACE_NAME"
           cf target -o '$CF_ORG_NAME' 
           cf target -s '$CF_SPACE_NAME'
         fi
