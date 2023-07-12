@@ -139,7 +139,6 @@ jobs:
 
   temp:
     name: Deploy CAP application
-    id: temp
     runs-on: ubuntu-latest
     needs: [build-cap-application, infrastructure1]
     steps:
