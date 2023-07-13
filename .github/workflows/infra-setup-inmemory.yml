@@ -145,4 +145,4 @@ jobs:
         fi
         cd ../app_inmemory
         ls -l
-        cf deploy mta.mtar
+        cf deploy mta_archives/mta.mtar
