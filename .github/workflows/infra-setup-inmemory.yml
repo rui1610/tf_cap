@@ -123,7 +123,7 @@ jobs:
       shell: bash
       run: |
         cd app_inmemory
-        mbt build -s ./
+        mbt build -t gen --mtar mta.tar
         ls -l      
     - name: 'Start deploy process for CAP app'
       working-directory: ${{ env.REPO_NAME }}
@@ -144,4 +144,4 @@ jobs:
           cf target -s $CF_SPACE_NAME
         fi
         cd ../app_inmemory
-        cf deploy mta_archives/tetmp.mtar
+        cf deploy gen/mta.tar
