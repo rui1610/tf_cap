@@ -61,6 +61,7 @@ module "add_hana_cloud_hana" {
   depends_on      = [btp_subaccount_entitlement.hana_cloud_hana, module.cloudfoundry_space]
 }
 
+/*
 resource "btp_subaccount_entitlement" "hana_hdi_shared" {
   subaccount_id = btp_subaccount.project.id
   service_name  = "hana"
@@ -73,3 +74,4 @@ module "add_hana_hdi-shared" {
   cf_space_id     = module.cloudfoundry_space.id
   depends_on      = [module.add_hana_cloud_hana, btp_subaccount_entitlement.hana_hdi_shared]
 }
+*/
