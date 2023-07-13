@@ -144,7 +144,5 @@ jobs:
           cf target -s $CF_SPACE_NAME
         fi
         cd ../app_inmemory
-        cd mta_archives
         ls -l
-        cd ..
-        cf deploy mta_archives/mta.mtar
+        cf deploy mta.mtar
