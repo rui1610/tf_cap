@@ -52,6 +52,7 @@ jobs:
     - name: "Get GitHub repo name"
       shell: bash
       run: |
+        cd ..
         source "$GITHUB_REPO_VARS"
         echo "GENERATED_REPO_NAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
 
