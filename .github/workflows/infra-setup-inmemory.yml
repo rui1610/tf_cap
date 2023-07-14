@@ -51,7 +51,7 @@ jobs:
 
     - name: "Get GitHub repo name"
       shell: bash
-      working-directory: ${{ env.REPO_NAME }}
+      working-directory: /__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})
       run: |
         source "$GITHUB_REPO_VARS"
         echo "GENERATED_REPO_NAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
