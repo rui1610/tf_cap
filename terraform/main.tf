@@ -58,7 +58,7 @@ resource "btp_subaccount_entitlement" "hana_cloud_hana" {
 module "add_hana_cloud_hana" {
   source          = "./hana_cloud/"
   cf_space_id     = module.cloudfoundry_space.id
-  depends_on      = [btp_subaccount_entitlement.hana_cloud_hana, module.cloudfoundry_space]
+  depends_on      = [btp_subaccount_entitlement.hana_cloud_hana, module.cloudfoundry_space, time_sleep.wait_30_seconds]
 }
 
 resource "btp_subaccount_entitlement" "hana_hdi_shared" {
