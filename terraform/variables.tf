@@ -16,6 +16,12 @@ variable "app_admins" {
   default     = ["rui.nogueira@sap.com","jeremias.roessler@sap.com"]
 }
 
+variable "repo_name" {
+  type        = string
+  description = "Defines the GitHub repository name for the sub account"
+  default     = "temp"
+}
+
 variable "entitlements" {
   type = list(object({
       service_name = string
