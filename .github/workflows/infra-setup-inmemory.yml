@@ -33,6 +33,10 @@ jobs:
       working-directory: terraform_inmemory
       shell: bash
       run: |
+        cd ..
+        source "$GITHUB_REPO_VARS"
+        echo "GENERATED_REPO_NAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
+        cd terraform_inmemory
         if [ -f "$CF_METADATA_FILENAME" ]; then
             echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
             source "$CF_METADATA_FILENAME"
@@ -43,9 +47,6 @@ jobs:
         else 
             echo "generated_gh_reponame=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
         fi
-        cd ..
-        source "$GITHUB_REPO_VARS"
-        echo "GENERATED_REPO_NAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
 
     - name: "Get repo folder in container"
       shell: bash
