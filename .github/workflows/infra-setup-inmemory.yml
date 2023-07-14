@@ -84,7 +84,7 @@ jobs:
 
     - name: Terraform Apply
       id: terraform_apply
-      run: terraform apply -auto-approve -var repo_name=${{ needs.check-if-cf-file-exists.outputs.generated_gh_reponame }}
+      run: terraform apply -auto-approve -var repo_name=
         TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform_inmemory'
