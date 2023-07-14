@@ -2,11 +2,15 @@ locals {
   uuid = uuid()
 }
 
+data "env_file" "repo" {
+  template = "${file("..terraform.env")}"
+}
+
 ###
 # Creation of subaccount
 ###
 resource "btp_subaccount" "project" {
-  name      = var.subaccount_name
+  name      = var.subaccount_name + "${env_file.repo.policy.REPO_NAME}"
   subdomain = local.uuid
   region    = lower("${var.region}")
 }
