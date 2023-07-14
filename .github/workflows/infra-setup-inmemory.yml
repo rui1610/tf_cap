@@ -43,19 +43,14 @@ jobs:
         else 
             echo "generated_gh_reponame=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
         fi
+        cd ..
+        source "$GITHUB_REPO_VARS"
+        echo "GENERATED_REPO_NAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
 
     - name: "Get repo folder in container"
       shell: bash
       run: |
         echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
-
-    - name: "Get GitHub repo name"
-      shell: bash
-      working-directory: /__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})
-      run: |
-        source "$GITHUB_REPO_VARS"
-        echo "GENERATED_REPO_NAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
-
 
   infrastructure1:
     if: ${{needs.check-if-cf-file-exists.outputs.cf_metadatafile_exists == 'false'}}
