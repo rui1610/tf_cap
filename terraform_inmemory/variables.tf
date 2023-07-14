@@ -15,3 +15,9 @@ variable "app_admins" {
   description = "Defines the administrators for the sub account and app."
   default     = ["rui.nogueira@sap.com","jeremias.roessler@sap.com"]
 }
+
+variable "repo_name" {
+  type        = string
+  description = "Defines the GitHub repository name for the sub account"
+  default     = "temp"
+}

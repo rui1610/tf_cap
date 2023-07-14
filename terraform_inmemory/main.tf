@@ -2,15 +2,11 @@ locals {
   uuid = uuid()
 }
 
-data "env_file" "repo" {
-  template = "${file("..terraform.env")}"
-}
-
 ###
 # Creation of subaccount
 ###
 resource "btp_subaccount" "project" {
-  name      = var.subaccount_name + "${env_file.repo.policy.REPO_NAME}"
+  name      = "${var.subaccount_name} - ${var.repo_name}"
   subdomain = local.uuid
   region    = lower("${var.region}")
 }
@@ -22,7 +18,7 @@ resource "btp_subaccount_role_collection_assignment" "subaccount_users" {
   for_each = toset("${var.app_admins}")
     subaccount_id        = btp_subaccount.project.id
     role_collection_name = "Subaccount Administrator"
-    user_name     = each.value
+    user_name            = each.value
 }
 
 ###
