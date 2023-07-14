@@ -137,6 +137,8 @@ jobs:
         cd app_inmemory
         mbt build -s ./ --mtar mta.mtar
         ls -l
+
+
     - name: 'Start deploy process for CAP app'
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
