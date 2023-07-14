@@ -45,7 +45,7 @@ jobs:
             echo "cloudfoundry_org_name=$cloudfoundry_org_name" >> $GITHUB_OUTPUT 
             echo "cloudfoundry_space_name=$cloudfoundry_space_name" >> $GITHUB_OUTPUT 
         else 
-            echo "generated_gh_reponame=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
+            echo "cf_metadatafile_exists=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
         fi
 
     - name: "Get repo folder in container"
