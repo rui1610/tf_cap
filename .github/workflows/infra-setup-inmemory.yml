@@ -11,7 +11,7 @@ on:
 env:
   TARGET_BRANCH: main
   CF_METADATA_FILENAME: cloudfoundry.tfvars
-  GITHUB_REPO_VARS: ../terraform.env
+  GITHUB_REPO_VARS: terraform.env
 
 # Taken from https://github.com/hashicorp/setup-terraform
 jobs:
