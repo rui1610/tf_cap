@@ -35,7 +35,7 @@ jobs:
       run: |
         cd ..
         source "$GITHUB_REPO_VARS"
-        echo "GENERATED_REPO_NAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
+        echo "generated_gh_reponame=$GENERATED_REPO_NAME"  >> $GITHUB_OUTPUT
         cd terraform_inmemory
         if [ -f "$CF_METADATA_FILENAME" ]; then
             echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
@@ -84,8 +84,7 @@ jobs:
 
     - name: Terraform Apply
       id: terraform_apply
-      run: terraform apply -auto-approve -var repo_name=${{ env.GENERATED_REPO_NAME }}
-      env:
+      run: terraform apply -auto-approve -var repo_name=${{needs.check-if-cf-file-exists.outputs.generated_gh_reponame}}
         TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform_inmemory'
