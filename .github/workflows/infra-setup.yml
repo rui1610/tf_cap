@@ -146,9 +146,13 @@ jobs:
         cd terraform
         if [ -f "$CF_METADATA_FILENAME" ]; then
           source "$CF_METADATA_FILENAME"
+          echo "cloudfoundry_org_name   = $cloudfoundry_org_name"
+          echo "cloudfoundry_space_name = $cloudfoundry_space_name"
           cf target -o $cloudfoundry_org_name
           cf target -s $cloudfoundry_space_name
         else 
+          echo "CF_ORG_NAME   = $CF_ORG_NAME"
+          echo "CF_SPACE_NAME = $CF_SPACE_NAME"
           cf target -o $CF_ORG_NAME
           cf target -s $CF_SPACE_NAME
         fi
