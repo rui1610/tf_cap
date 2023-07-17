@@ -42,6 +42,7 @@ jobs:
   check-if-cf-file-exists2:
     name: Temp2
     runs-on: ubuntu-latest
+    needs: [determine_execution_values]
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
