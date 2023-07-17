@@ -52,12 +52,14 @@ jobs:
           echo "folder_terraform_scripts=${{ env.WORKING_DIR }}/hana"  >> $GITHUB_OUTPUT
           echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_HANA }}"  >> $GITHUB_OUTPUT
           echo "tf_action_working_dir=${{ env.WORKING_DIR }}/hana"  >> $GITHUB_ENV
+          echo "Running setup with persistence on HANA-CLOUD: ${{ env.WORKING_DIR }}/hana"
         fi
         if [ "$DEPLOYMENT_TYPE" == "IN_MEMORY" ]
           then
           echo "folder_terraform_scripts=${{ env.WORKING_DIR }}/inmemory"  >> $GITHUB_OUTPUT
           echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_INMEMORY }}"  >> $GITHUB_OUTPUT
           echo "tf_action_working_dir=${{ env.WORKING_DIR }}/inmemory"  >> $GITHUB_ENV
+          echo "Running setup with in memory persistence: ${{ env.WORKING_DIR }}/inmemory"
         fi
     - name: Determine if infra setup already done
       working-directory: ${{ env.WORKING_DIR }}
