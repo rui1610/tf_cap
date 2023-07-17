@@ -157,9 +157,17 @@ jobs:
     - name: 'Start build process for CAP app'
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
+      env:      
+        DEPLOYMENT_TYPE: ${{needs.determine_execution_values.outputs.deployment_type}}
+        ORG_NAME1: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}
+        SPACE_NAME1: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}
+        ORG_NAME2: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
+        SPACE_NAME3: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
+
       run: |
         if [ "${{needs.determine_execution_values.outputs.deployment_type == 'HANA' }}" ]
         then
+          echo "Build CAP app HANA"
           cd ${{ env.WORKING_DIR_APP }}/hana
           cds add hana --for hybrid
           cds add mta
@@ -167,6 +175,7 @@ jobs:
         fi
         if [ "${{needs.determine_execution_values.outputs.deployment_type == 'IN_MEMORY' }}" ]
         then
+          echo "Build CAP app IN_MEMORY"
           cd ${{ env.WORKING_DIR_APP }}/inmemory
           mbt build -s ./ --mtar mta.mtar
         fi
