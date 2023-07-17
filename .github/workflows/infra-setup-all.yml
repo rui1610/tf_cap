@@ -71,7 +71,7 @@ jobs:
   
 
   setup_infrastructure:
-    if: ${{CF_METADATA_FILE_EXISTS == 'false'}}
+    if: ${{env.CF_METADATA_FILE_EXISTS == 'false'}}
     name: Run Terraform script
     runs-on: ubuntu-latest
     needs: [determine_execution_values]
@@ -97,7 +97,7 @@ jobs:
 
     - name: Terraform Apply
       id: terraform_apply
-      run: terraform apply -auto-approve -var repo_name=${{ GENERATED_GH_REPONAME }}
+      run: terraform apply -auto-approve -var repo_name=${{ env.GENERATED_GH_REPONAME }}
       env:      
         TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
