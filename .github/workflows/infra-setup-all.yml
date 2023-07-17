@@ -158,11 +158,11 @@ jobs:
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
       env:      
-        DEPLOYMENT_TYPE: ${{needs.determine_execution_values.outputs.deployment_type}}
-        ORG_NAME1: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}
-        SPACE_NAME1: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}
-        ORG_NAME2: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
-        SPACE_NAME3: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
+        DEPLOYMENT_TYPE: "${{needs.determine_execution_values.outputs.deployment_type}}"
+        ORG_NAME1: "${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
+        SPACE_NAME1: "${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
+        ORG_NAME2: "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
+        SPACE_NAME3: "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
 
       run: |
         if [ "${{needs.determine_execution_values.outputs.deployment_type == 'HANA' }}" ]
