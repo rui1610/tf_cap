@@ -15,6 +15,9 @@ env:
   CF_ORG_NAME:
   CF_SPACE_NAME:
   DEPLOYMENT_TYPE:
+  FOLDER_TERRAFORM_SCRIPTS:
+  TF_ACTION_WORKING_DIR:
+
 
 # Taken from https://github.com/hashicorp/setup-terraform
 jobs:
@@ -29,7 +32,7 @@ jobs:
       with:
         ref: ${{ env.TARGET_BRANCH }}
     - name: Get repo name and deployment option
-      working-directory: terraform
+      working-directory: ${{ env.TARGET_BRANCH }}
       shell: bash
       run: |
         cd ..
@@ -43,10 +46,14 @@ jobs:
         if [ "$DEPLOYMENT_TYPE" == "HANA" ]
         then
           echo "CF_METADATA_FILENAME_TO_USE=$CF_METADATA_FILENAME_HANA"  >> $GITHUB_ENV
+          echo "FOLDER_TERRAFORM_SCRIPTS=hana"  >> $GITHUB_ENV
+          echo "TF_ACTION_WORKING_DIR=terraform/hana"  >> $GITHUB_ENV
         fi
         if [ "$DEPLOYMENT_TYPE" == "IN_MEMORY" ]
         then
           echo "CF_METADATA_FILENAME_TO_USE=$CF_METADATA_FILENAME_INMEMORY"  >> $GITHUB_ENV
+          echo "FOLDER_TERRAFORM_SCRIPTS=inmemory"  >> $GITHUB_ENV
+          echo "TF_ACTION_WORKING_DIR=terraform/inmemory"  >> $GITHUB_ENV
         fi
     - name: Determine if infra setup already done
       working-directory: terraform
@@ -83,14 +90,15 @@ jobs:
     - name: Terraform Init
       id: init
       run: terraform init
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform_inmemory'
-      working-directory: terraform_inmemory
       shell: bash
     - name: Terraform Apply
       id: terraform_apply
       run: terraform apply -auto-approve -var repo_name=${{ env.GENERATED_GH_REPONAME }}
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
       env:      
         TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -99,10 +107,10 @@ jobs:
         BTP_PASSWORD: ${{ secrets.BTP_PASSWORD }}
         CF_USER: ${{ secrets.BTP_USERNAME }}
         CF_PASSWORD: ${{ secrets.BTP_PASSWORD }}
-      working-directory: terraform_inmemory
       shell: bash
     - name: Terraform Output
       id: terraform_output
+      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
       run: |
         echo "CF_ORG_NAME=$(terraform output cloudfoundry_org_name)" >> $GITHUB_ENV
         echo "CF_SPACE_NAME=$(terraform output cloudfoundry_space_name)" >> $GITHUB_ENV
@@ -111,7 +119,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         TF_ACTION_WORKING_DIR: 'terraform_inmemory'
-      working-directory: terraform_inmemory
       shell: bash
     - name: Commit and push changes
       run: |
