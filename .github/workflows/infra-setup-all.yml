@@ -165,7 +165,7 @@ jobs:
         SPACE_NAME3: "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
 
       run: |
-        if [ "${{needs.determine_execution_values.outputs.deployment_type == 'HANA' }}" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type}}" == 'HANA' ]
         then
           echo "Build CAP app HANA"
           cd ${{ env.WORKING_DIR_APP }}/hana
@@ -173,7 +173,7 @@ jobs:
           cds add mta
           mbt build -t gen --mtar mta.tar
         fi
-        if [ "${{needs.determine_execution_values.outputs.deployment_type == 'IN_MEMORY' }}" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type}}" == 'IN_MEMORY' ]
         then
           echo "Build CAP app IN_MEMORY"
           cd ${{ env.WORKING_DIR_APP }}/inmemory
