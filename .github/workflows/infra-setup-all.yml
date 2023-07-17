@@ -62,7 +62,7 @@ jobs:
           echo "Running setup with in memory persistence: ${{ env.WORKING_DIR }}/inmemory"
         fi
     - name: Determine if infra setup already done
-      working-directory: ${{ env.WORKING_DIR }}
+      working-directory: ${{steps.determine_deployment_option.outputs.tf_action_working_dir }}
       id: cf_metadata_exists
       shell: bash
       run: |
