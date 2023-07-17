@@ -157,13 +157,6 @@ jobs:
     - name: 'Start build process for CAP app'
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
-      env:      
-        DEPLOYMENT_TYPE: "${{needs.determine_execution_values.outputs.deployment_type}}"
-        ORG_NAME1: "${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
-        SPACE_NAME1: "${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
-        ORG_NAME2: "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
-        SPACE_NAME3: "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
-
       run: |
         if [ "${{needs.determine_execution_values.outputs.deployment_type}}" == 'HANA' ]
         then
@@ -187,11 +180,11 @@ jobs:
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
 
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'HANA' }}" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == 'HANA' ]
         then
           cd ${{ env.WORKING_DIR_APP }}/hana
         fi
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'IN_MEMORY' }}" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == 'IN_MEMORY' ]
         then
           cd ${{ env.WORKING_DIR_APP }}/inmemory
         fi
@@ -199,20 +192,20 @@ jobs:
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
           source "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
           echo "FILE EXISTS"
-          echo "ORG1: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
-          echo "ORG2: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
-          echo "SPACE1: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
-          echo "SPACE2: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
-          cf target -o ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
+          echo "ORG1: "${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
+          echo "ORG2: "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
+          echo "SPACE1: "${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
+          echo "SPACE2: "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
+          cf target -o "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
           cf target -s ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
         else 
           echo "FILE DOES NOT EXIST"
-          echo "ORG1: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
-          echo "ORG2: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
-          echo "SPACE1: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
-          echo "SPACE2: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
-          cf target -o ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
-          cf target -s ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
+          echo "ORG1: "${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
+          echo "ORG2: "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
+          echo "SPACE1: "${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
+          echo "SPACE2: "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
+          cf target -o "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
+          cf target -s "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
         fi
 
         if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'HANA' }}" ]
