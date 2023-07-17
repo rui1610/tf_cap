@@ -177,7 +177,6 @@ jobs:
       run: |
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
-        cd terraform_inmemory
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
           source "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
           cf target -o ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
