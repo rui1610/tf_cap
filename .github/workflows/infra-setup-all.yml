@@ -5,9 +5,9 @@ on:
 
 env:
   TARGET_BRANCH: main
-  CF_METADATA_FILENAME_TO_USE: hana/cloudfoundry_hana.tfvars
-  CF_METADATA_FILENAME_HANA: hana/cloudfoundry_hana.tfvars
-  CF_METADATA_FILENAME_INMEMORY: inmemory/cloudfoundry_inmemory.tfvars
+  CF_METADATA_FILENAME_TO_USE: cloudfoundry_hana.tfvars
+  CF_METADATA_FILENAME_HANA: cloudfoundry_hana.tfvars
+  CF_METADATA_FILENAME_INMEMORY: cloudfoundry_inmemory.tfvars
   GITHUB_REPO_VARS: terraform.env
   WORKING_DIR: terraform
   
