@@ -206,11 +206,11 @@ jobs:
           cf target -s ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
         fi
 
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'HANA }}" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'HANA' }}" ]
         then
           cf deploy gen/mta.tar
         fi
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'IN_MEMORY }}" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'IN_MEMORY' }}" ]
         then
           cd mta_archives
           cf deploy mta.mtar
