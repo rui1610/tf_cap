@@ -9,7 +9,8 @@ env:
   CF_METADATA_FILENAME_HANA: cloudfoundry_hana.tfvars
   CF_METADATA_FILENAME_INMEMORY: cloudfoundry_inmemory.tfvars
   GITHUB_REPO_VARS: terraform.env
-  WORKING_DIR: terraform
+  WORKING_DIR_TERRAFORM: terraform
+  WORKING_DIR_APP: app
   
 
 
@@ -34,7 +35,7 @@ jobs:
       with:
         ref: ${{ env.TARGET_BRANCH }}
     - name: Get repo name and deployment option
-      working-directory: ${{ env.WORKING_DIR }}
+      working-directory: ${{ env.WORKING_DIR_TERRAFORM }}
       shell: bash
       id: terraform_envs
       run: |
@@ -43,23 +44,23 @@ jobs:
         echo "generated_gh_reponame=$GENERATED_REPO_NAME"  >> $GITHUB_OUTPUT
         echo "deployment_type=$DEPLOYMENT_TYPE"  >> $GITHUB_OUTPUT
     - name: Determine deployment option
-      working-directory: ${{ env.WORKING_DIR }}
+      working-directory: ${{ env.WORKING_DIR_TERRAFORM }}
       shell: bash
       id: determine_deployment_option
       run: |
         if [ "${{steps.terraform_envs.outputs.deployment_type }}" == "HANA" ]
         then
-          echo "folder_terraform_scripts=${{ env.WORKING_DIR }}/hana"  >> $GITHUB_OUTPUT
+          echo "folder_terraform_scripts=${{ env.WORKING_DIR_TERRAFORM }}/hana"  >> $GITHUB_OUTPUT
           echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_HANA }}"  >> $GITHUB_OUTPUT
-          echo "tf_action_working_dir=${{ env.WORKING_DIR }}/hana"  >> $GITHUB_OUTPUT
-          echo "Running setup with persistence on HANA-CLOUD: ${{ env.WORKING_DIR }}/hana"
+          echo "tf_action_working_dir=${{ env.WORKING_DIR_TERRAFORM }}/hana"  >> $GITHUB_OUTPUT
+          echo "Running setup with persistence on HANA-CLOUD: ${{ env.WORKING_DIR_TERRAFORM }}/hana"
         fi
         if [ "${{steps.terraform_envs.outputs.deployment_type }}" == "IN_MEMORY" ]
           then
-          echo "folder_terraform_scripts=${{ env.WORKING_DIR }}/inmemory"  >> $GITHUB_OUTPUT
+          echo "folder_terraform_scripts=${{ env.WORKING_DIR_TERRAFORM }}/inmemory"  >> $GITHUB_OUTPUT
           echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_INMEMORY }}"  >> $GITHUB_OUTPUT
-          echo "tf_action_working_dir=${{ env.WORKING_DIR }}/inmemory"  >> $GITHUB_OUTPUT
-          echo "Running setup with in memory persistence: ${{ env.WORKING_DIR }}/inmemory"
+          echo "tf_action_working_dir=${{ env.WORKING_DIR_TERRAFORM }}/inmemory"  >> $GITHUB_OUTPUT
+          echo "Running setup with in memory persistence: ${{ env.WORKING_DIR_TERRAFORM }}/inmemory"
         fi
     - name: Determine if infra setup already done
       working-directory: ${{steps.determine_deployment_option.outputs.tf_action_working_dir }}
@@ -138,3 +139,64 @@ jobs:
         git config user.name "[tf_btp bot] storage of cf info"
         git diff --quiet && git diff --staged --quiet || git commit -m "[tf_btp bot] Store retrieved cloudfoundry metadata."
         git push origin ${{ env.TARGET_BRANCH }}
+
+
+  deploy-cap-application:
+    name: Build + deploy CAP app
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/rui1610/tf_cap-tools:main
+      options: --user root    
+    needs: setup_infrastructure
+    if: |
+        always() &&
+        (needs.setup_infrastructure.result == 'skipped' || needs.setup_infrastructure.result == 'success')    
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+    - name: 'Start build process for CAP app'
+      working-directory: ${{ env.REPO_NAME }}
+      shell: bash
+      run: |
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "HANA" ]
+        then
+          cd ${{ env.WORKING_DIR_APP }}/hana
+          cds add hana --for hybrid
+          cds add mta
+          mbt build -t gen --mtar mta.tar
+        fi
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "IN_MEMORY" ]
+        then
+          cd ${{ env.WORKING_DIR_APP }}/inmemory
+          mbt build -s ./ --mtar mta.mtar
+        fi
+
+    - name: 'Start deploy process for CAP app'
+      working-directory: ${{ env.REPO_NAME }}
+      shell: bash
+      run: |
+        cf api https://api.cf.us10.hana.ondemand.com
+        cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
+        cd terraform_inmemory
+        if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
+          source "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
+          cf target -o ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
+          cf target -s ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
+        else 
+          cf target -o ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}
+          cf target -s ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
+        fi
+
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "HANA" ]
+        then
+          cd ${{ env.WORKING_DIR_APP }}/hana
+          cf deploy gen/mta.tar
+        fi
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "IN_MEMORY" ]
+        then
+          cd ${{ env.WORKING_DIR_APP }}/inmemory
+          cd mta_archives
+          cf deploy mta.mtar
+        fi
+
+
