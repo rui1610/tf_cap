@@ -8,15 +8,7 @@ env:
   CF_METADATA_FILENAME_TO_USE: hana/cloudfoundry_hana.tfvars
   CF_METADATA_FILENAME_HANA: hana/cloudfoundry_hana.tfvars
   CF_METADATA_FILENAME_INMEMORY: inmemory/cloudfoundry_inmemory.tfvars
-  CF_METADATA_FILE_EXISTS: false
   GITHUB_REPO_VARS: terraform.env
-  REPO_NAME:
-  GENERATED_GH_REPONAME:
-  CF_ORG_NAME:
-  CF_SPACE_NAME:
-  DEPLOYMENT_TYPE:
-  FOLDER_TERRAFORM_SCRIPTS:
-  TF_ACTION_WORKING_DIR:
   WORKING_DIR: terraform
   
 
@@ -28,6 +20,14 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       cf_metadatafile_exists: ${{ steps.cf_metadata_exists.outputs.cf_metadatafile_exists }}
+      cloudfoundry_org_name: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_org_name }}
+      cloudfoundry_space_name: ${{ steps.cf_metadata_exists.outputs.cloudfoundry_space_name }}
+      generated_gh_reponame: ${{ steps.terraform_envs.outputs.generated_gh_reponame }}
+      deployment_type: ${{ steps.terraform_envs.outputs.deployment_type }}
+      folder_terraform_scripts: ${{ steps.determine_deployment_option.outputs.deployment_type }}
+      cf_metadata_filename_to_use: ${{ steps.determine_deployment_option.outputs.cf_metadata_filename_to_use }}
+      tf_action_working_dir: ${{ steps.determine_deployment_option.outputs.tf_action_working_dir }}
+      repo_name:  ${{ steps.get_repo_name.outputs.repo_name }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -36,50 +36,56 @@ jobs:
     - name: Get repo name and deployment option
       working-directory: ${{ env.WORKING_DIR }}
       shell: bash
+      id: terraform_envs
       run: |
         cd ..
         source "$GITHUB_REPO_VARS"
-        echo "GENERATED_GH_REPONAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
-        echo "DEPLOYMENT_TYPE=$DEPLOYMENT_TYPE"  >> $GITHUB_ENV
+        echo "generated_gh_reponame=$GENERATED_REPO_NAME"  >> $GITHUB_OUTPUT
+        echo "deployment_type=$DEPLOYMENT_TYPE"  >> $GITHUB_OUTPUT
     - name: Determine deployment option
       working-directory: ${{ env.WORKING_DIR }}
       shell: bash
+      id: determine_deployment_option
       run: |
         if [ "$DEPLOYMENT_TYPE" == "HANA" ]
         then
-          echo "CF_METADATA_FILENAME_TO_USE=$CF_METADATA_FILENAME_HANA"  >> $GITHUB_ENV
-          echo "FOLDER_TERRAFORM_SCRIPTS=hana"  >> $GITHUB_ENV
-          echo "TF_ACTION_WORKING_DIR=terraform/hana"  >> $GITHUB_ENV
+          echo "folder_terraform_scripts=${{ env.WORKING_DIR }}/hana"  >> $GITHUB_OUTPUT
+          echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_HANA }}"  >> $GITHUB_OUTPUT
+          echo "tf_action_working_dir=${{ env.WORKING_DIR }}/hana"  >> $GITHUB_ENV
         fi
         if [ "$DEPLOYMENT_TYPE" == "IN_MEMORY" ]
-        then
-          echo "CF_METADATA_FILENAME_TO_USE=$CF_METADATA_FILENAME_INMEMORY"  >> $GITHUB_ENV
-          echo "FOLDER_TERRAFORM_SCRIPTS=inmemory"  >> $GITHUB_ENV
-          echo "TF_ACTION_WORKING_DIR=terraform/inmemory"  >> $GITHUB_ENV
+          then
+          echo "folder_terraform_scripts=${{ env.WORKING_DIR }}/inmemory"  >> $GITHUB_OUTPUT
+          echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_INMEMORY }}"  >> $GITHUB_OUTPUT
+          echo "tf_action_working_dir=${{ env.WORKING_DIR }}/inmemory"  >> $GITHUB_ENV
         fi
     - name: Determine if infra setup already done
       working-directory: ${{ env.WORKING_DIR }}
       id: cf_metadata_exists
       shell: bash
       run: |
-        if [ -f "$CF_METADATA_FILENAME_TO_USE" ]; then
+        if [ -f "${{steps.determine_deployment_option.outputs.cf_metadata_filename_to_use }}" ]; then
           echo "cf_metadatafile_exists=true" >> $GITHUB_OUTPUT && echo "The CF metadata file exists!"
-          source "$CF_METADATA_FILENAME"
-          echo "CF_ORG_NAME  =$cloudfoundry_org_name" >> $GITHUB_ENV
-          echo "CF_SPACE_NAME =$cloudfoundry_space_name" >> $GITHUB_ENV
+          source "${{steps.determine_deployment_option.outputs.cf_metadata_filename_to_use }}"
+          echo "cloudfoundry_org_name  =$cloudfoundry_org_name" >> $GITHUB_OUTPUT
+          echo "cloudfoundry_space_name =$cloudfoundry_space_name" >> $GITHUB_OUTPUT
         else 
           echo "cf_metadatafile_exists=false" >> $GITHUB_OUTPUT && echo "The CF metadata file doesn't exist!"
         fi
     - name: "Get repo folder in container"
       shell: bash
+      id: get_repo_name
       run: |
-        echo "REPO_NAME=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_ENV
+        echo "repo_name=/__w/$(basename ${{ github.repository }})/$(basename ${{ github.repository }})" >> $GITHUB_OUTPUT
   
   setup_infrastructure:
     if: ${{needs.determine_execution_values.outputs.cf_metadatafile_exists == 'false'}}
     name: Run Terraform script
     runs-on: ubuntu-latest
     needs: [determine_execution_values]
+    outputs:
+      cloudfoundry_org_name: ${{ steps.terraform_output.outputs.cloudfoundry_org_name }}
+      cloudfoundry_space_name: ${{ steps.terraform_output.outputs.cloudfoundry_space_name }}
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v3
@@ -92,14 +98,14 @@ jobs:
     - name: Terraform Init
       id: init
       run: terraform init
-      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+      working-directory:  ${{needs.determine_execution_values.outputs.tf_action_working_dir}}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       shell: bash
     - name: Terraform Apply
       id: terraform_apply
-      run: terraform apply -auto-approve -var repo_name=${{ env.GENERATED_GH_REPONAME }}
-      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+      run: terraform apply -auto-approve -var repo_name=${{needs.determine_execution_values.outputs.repo_name}}
+      working-directory: ${{needs.determine_execution_values.outputs.tf_action_working_dir}}
       env:      
         TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -110,12 +116,12 @@ jobs:
       shell: bash
     - name: Terraform Output
       id: terraform_output
-      working-directory: ${{ env.TF_ACTION_WORKING_DIR }}
+      working-directory: ${{needs.determine_execution_values.outputs.tf_action_working_dir}}
       run: |
-        echo "CF_ORG_NAME=$(terraform output cloudfoundry_org_name)" >> $GITHUB_ENV
-        echo "CF_SPACE_NAME=$(terraform output cloudfoundry_space_name)" >> $GITHUB_ENV
-        echo "CF_ORG_NAME=$(terraform output cloudfoundry_org_name)" > $CF_METADATA_FILENAME_TO_USE
-        echo "CF_SPACE_NAME=$(terraform output cloudfoundry_space_name)" >> $CF_METADATA_FILENAME_TO_USE
+        echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" >> $GITHUB_OUTPUT
+        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" >> $GITHUB_OUTPUT
+        echo "cloudfoundry_org_name=$(terraform output cloudfoundry_org_name)" >  ${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}
+        echo "cloudfoundry_space_name=$(terraform output cloudfoundry_space_name)" >> ${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       shell: bash
