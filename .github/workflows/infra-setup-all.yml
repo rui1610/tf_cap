@@ -147,7 +147,7 @@ jobs:
     container:
       image: ghcr.io/rui1610/tf_cap-tools:main
       options: --user root    
-    needs: setup_infrastructure
+    needs: [setup_infrastructure, determine_execution_values]
     if: |
         always() &&
         (needs.setup_infrastructure.result == 'skipped' || needs.setup_infrastructure.result == 'success')    
