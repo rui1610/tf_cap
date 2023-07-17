@@ -118,7 +118,6 @@ jobs:
         echo "CF_SPACE_NAME=$(terraform output cloudfoundry_space_name)" >> $CF_METADATA_FILENAME_TO_USE
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        TF_ACTION_WORKING_DIR: 'terraform_inmemory'
       shell: bash
     - name: Commit and push changes
       run: |
