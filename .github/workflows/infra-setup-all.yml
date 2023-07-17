@@ -99,15 +99,19 @@ jobs:
         terraform_wrapper: false
     - name: Terraform Init
       id: init
-      run: terraform init
       working-directory:  ${{needs.determine_execution_values.outputs.tf_action_working_dir}}
+      run: |
+        echo "Running terraform script in dir: ${{needs.determine_execution_values.outputs.tf_action_working_dir}}"
+        terraform init
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       shell: bash
     - name: Terraform Apply
       id: terraform_apply
-      run: terraform apply -auto-approve -var repo_name=${{needs.determine_execution_values.outputs.generated_gh_reponame}}
       working-directory: ${{needs.determine_execution_values.outputs.tf_action_working_dir}}
+      run: |
+        echo "Running terraform script in dir: ${{needs.determine_execution_values.outputs.tf_action_working_dir}}"
+        terraform apply -auto-approve -var repo_name=${{needs.determine_execution_values.outputs.generated_gh_reponame}}
       env:      
         TARGET_BRANCH: ${{ env.TARGET_BRANCH }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
