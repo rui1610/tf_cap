@@ -48,14 +48,14 @@ jobs:
       shell: bash
       id: determine_deployment_option
       run: |
-        if [ "${{steps.terraform_envs.outputs.deployment_type }}" == "HANA" ]
+        if [ "${{steps.terraform_envs.outputs.deployment_type == 'HANA' }}" ]
         then
           echo "folder_terraform_scripts=${{ env.WORKING_DIR_TERRAFORM }}/hana"  >> $GITHUB_OUTPUT
           echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_HANA }}"  >> $GITHUB_OUTPUT
           echo "tf_action_working_dir=${{ env.WORKING_DIR_TERRAFORM }}/hana"  >> $GITHUB_OUTPUT
           echo "Running setup with persistence on HANA-CLOUD: ${{ env.WORKING_DIR_TERRAFORM }}/hana"
         fi
-        if [ "${{steps.terraform_envs.outputs.deployment_type }}" == "IN_MEMORY" ]
+        if [ "${{steps.terraform_envs.outputs.deployment_type }} == 'IN_MEMORY' }}" ]
           then
           echo "folder_terraform_scripts=${{ env.WORKING_DIR_TERRAFORM }}/inmemory"  >> $GITHUB_OUTPUT
           echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_INMEMORY }}"  >> $GITHUB_OUTPUT
@@ -158,14 +158,14 @@ jobs:
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
       run: |
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "HANA" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type == 'HANA' }}" ]
         then
           cd ${{ env.WORKING_DIR_APP }}/hana
           cds add hana --for hybrid
           cds add mta
           mbt build -t gen --mtar mta.tar
         fi
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "IN_MEMORY" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type == 'IN_MEMORY' }}" ]
         then
           cd ${{ env.WORKING_DIR_APP }}/inmemory
           mbt build -s ./ --mtar mta.mtar
@@ -178,11 +178,11 @@ jobs:
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
 
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "HANA" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'HANA' }}" ]
         then
           cd ${{ env.WORKING_DIR_APP }}/hana
         fi
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "IN_MEMORY" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'IN_MEMORY' }}" ]
         then
           cd ${{ env.WORKING_DIR_APP }}/inmemory
         fi
@@ -206,11 +206,11 @@ jobs:
           cf target -s ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}
         fi
 
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "HANA" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'HANA }}" ]
         then
           cf deploy gen/mta.tar
         fi
-        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "IN_MEMORY" ]
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }} == 'IN_MEMORY }}" ]
         then
           cd mta_archives
           cf deploy mta.mtar
