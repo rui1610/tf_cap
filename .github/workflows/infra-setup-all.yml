@@ -1,0 +1,59 @@
+name: Setup infrastructure (all options)
+
+on:
+  workflow_dispatch:
+
+env:
+  TARGET_BRANCH: main
+  CF_METADATA_FILENAME_HANA: cloudfoundry_hana.tfvars
+  CF_METADATA_FILENAME_INMEMORY: cloudfoundry_inmemory.tfvars
+  CF_METADATA_FILE_EXISTS: false
+  GITHUB_REPO_VARS: terraform.env
+  GENERATED_GH_REPONAME:
+  CF_ORG_NAME:
+  CF_SPACE_NAME:
+
+
+# Taken from https://github.com/hashicorp/setup-terraform
+jobs:
+  determine_execution_values:
+    name: Check infrastructure status
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ env.TARGET_BRANCH }}
+    - name: Determine deployment option 1
+      id: deployment_option1
+      working-directory: terraform
+      shell: bash
+      run: |
+        cd ..
+        source "$GITHUB_REPO_VARS"
+        echo "GENERATED_GH_REPONAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
+    - name: Determine deployment option
+      id: deployment_option2
+      working-directory: terraform
+      shell: bash
+      run: |
+        echo "GENERATED_GH_REPONAME=$GENERATED_REPO_NAME"  >> $GITHUB_ENV
+  
+  check-if-cf-file-exists2:
+    name: Temp2
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v3
+      with:
+        ref: ${{ env.TARGET_BRANCH }}
+    - name: Determine deployment option
+      id: deployment_option
+      working-directory: terraform
+      shell: bash
+      run: |
+        cd ..
+        source "$GITHUB_REPO_VARS"
+        echo "$GENERATED_REPO_NAME"
+
+        

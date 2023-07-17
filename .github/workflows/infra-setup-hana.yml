@@ -157,5 +157,4 @@ jobs:
           cf target -s $CF_SPACE_NAME
         fi
         cd ../app
-        cds deploy --to hana --profile hybrid
         cf deploy gen/mta.tar
