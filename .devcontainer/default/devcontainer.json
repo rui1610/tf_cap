@@ -1,4 +1,3 @@
-// For format details, see https://aka.ms/devcontainer.json.
 {
     "name": "Terraform provider for SAP BTP (dev!)",
     "image": "ghcr.io/rui1610/tf_cap-tf:main",

@@ -1,0 +1,10 @@
+{
+    "name": "SAP BTP tools",
+    "image": "ghcr.io/rui1610/tf_cap-tools:main",
+    "customizations": {},
+    "workspaceFolder": "/home/user",
+	"hostRequirements": {
+		"memory": "4gb"
+	},
+	"remoteUser": "user"
+}
