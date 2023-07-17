@@ -178,6 +178,15 @@ jobs:
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
 
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "HANA" ]
+        then
+          cd ${{ env.WORKING_DIR_APP }}/hana
+        fi
+        if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "IN_MEMORY" ]
+        then
+          cd ${{ env.WORKING_DIR_APP }}/inmemory
+        fi
+
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
           source "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
           echo "FILE EXISTS"
@@ -199,14 +208,10 @@ jobs:
 
         if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "HANA" ]
         then
-          cd ${{ env.WORKING_DIR_APP }}/hana
           cf deploy gen/mta.tar
         fi
         if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == "IN_MEMORY" ]
         then
-          cd ${{ env.WORKING_DIR_APP }}/inmemory
           cd mta_archives
           cf deploy mta.mtar
         fi
-
-
