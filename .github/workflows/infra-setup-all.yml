@@ -200,8 +200,8 @@ jobs:
           echo "ORG2: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
           echo "SPACE1: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
           echo "SPACE2: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
-          cf target -o "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
-          cf target -s "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
+          cf target -o "${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
+          cf target -s "${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
         else 
           echo "FILE DOES NOT EXIST"
           echo "ORG1: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
