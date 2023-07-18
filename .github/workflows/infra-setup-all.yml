@@ -196,18 +196,14 @@ jobs:
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
           source "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
           echo "FILE EXISTS"
-          echo "ORG1: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
-          echo "ORG2: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
-          echo "SPACE1: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
-          echo "SPACE2: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
+          echo "ORG: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
+          echo "SPACE: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
           cf target -o "${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
           cf target -s "${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
         else 
           echo "FILE DOES NOT EXIST"
-          echo "ORG1: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
-          echo "ORG2: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
-          echo "SPACE1: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
-          echo "SPACE2: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
+          echo "ORG: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
+          echo "SPACE: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
           cf target -o "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
           cf target -s "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
         fi
