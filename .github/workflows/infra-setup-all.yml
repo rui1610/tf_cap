@@ -48,14 +48,14 @@ jobs:
       shell: bash
       id: determine_deployment_option
       run: |
-        if [ "${{steps.terraform_envs.outputs.deployment_type == 'HANA' }}" ]
+        if [ "${{steps.terraform_envs.outputs.deployment_type}}" == 'HANA' ]
         then
           echo "folder_terraform_scripts=${{ env.WORKING_DIR_TERRAFORM }}/hana"  >> $GITHUB_OUTPUT
           echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_HANA }}"  >> $GITHUB_OUTPUT
           echo "tf_action_working_dir=${{ env.WORKING_DIR_TERRAFORM }}/hana"  >> $GITHUB_OUTPUT
           echo "Running setup with persistence on HANA-CLOUD: ${{ env.WORKING_DIR_TERRAFORM }}/hana"
         fi
-        if [ "${{steps.terraform_envs.outputs.deployment_type }} == 'IN_MEMORY' }}" ]
+        if [ "${{steps.terraform_envs.outputs.deployment_type }}" == 'IN_MEMORY' ]
           then
           echo "folder_terraform_scripts=${{ env.WORKING_DIR_TERRAFORM }}/inmemory"  >> $GITHUB_OUTPUT
           echo "cf_metadata_filename_to_use=${{ env.CF_METADATA_FILENAME_INMEMORY }}"  >> $GITHUB_OUTPUT
@@ -196,6 +196,8 @@ jobs:
           pwd
           ls -l
         fi
+
+        echo "FILE TO USE IS: ${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
 
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
           source "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
