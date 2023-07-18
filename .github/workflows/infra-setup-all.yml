@@ -11,10 +11,7 @@ env:
   GITHUB_REPO_VARS: terraform.env
   WORKING_DIR_TERRAFORM: terraform
   WORKING_DIR_APP: app
-  
 
-
-# Taken from https://github.com/hashicorp/setup-terraform
 jobs:
   determine_execution_values:
     name: Check infrastructure status
@@ -197,17 +194,11 @@ jobs:
           ls -l
         fi
 
-        echo "FILE TO USE IS: ${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
-
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
           source "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
-          echo "FILE EXISTS"
           cf target -o $cloudfoundry_org_name
           cf target -s $cloudfoundry_space_name
         else 
-          echo "FILE DOES NOT EXIST"
-          echo "ORG: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
-          echo "SPACE: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
           cf target -o "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
           cf target -s "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
         fi
