@@ -182,11 +182,15 @@ jobs:
 
         if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == 'HANA' ]
         then
-          cd ${{ env.WORKING_DIR_APP }}/hana
+          cd ${{ env.WORKING_DIR_TERRAFORM }}/hana
+          pwd
+          ls -l
         fi
         if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == 'IN_MEMORY' ]
         then
-          cd ${{ env.WORKING_DIR_APP }}/inmemory
+          cd ${{ env.WORKING_DIR_TERRAFORM }}/inmemory
+          pwd
+          ls -l
         fi
 
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
@@ -196,8 +200,8 @@ jobs:
           echo "ORG2: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
           echo "SPACE1: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
           echo "SPACE2: ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
-          cf target -o ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
-          cf target -s ${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
+          cf target -o "${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
+          cf target -s "${{needs.setup_infrastructure.outputs.cloudfoundry_space_name}}"
         else 
           echo "FILE DOES NOT EXIST"
           echo "ORG1: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
