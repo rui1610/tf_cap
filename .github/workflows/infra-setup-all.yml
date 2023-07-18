@@ -184,14 +184,10 @@ jobs:
         if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == 'HANA' ]
         then
           cd ${{ env.WORKING_DIR_TERRAFORM }}/hana
-          pwd
-          ls -l
         fi
         if [ "${{needs.determine_execution_values.outputs.deployment_type }}" == 'IN_MEMORY' ]
         then
           cd ${{ env.WORKING_DIR_TERRAFORM }}/inmemory
-          pwd
-          ls -l
         fi
 
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
