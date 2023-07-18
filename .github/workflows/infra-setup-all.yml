@@ -176,6 +176,10 @@ jobs:
     - name: 'Start deploy process for CAP app'
       working-directory: ${{ env.REPO_NAME }}
       shell: bash
+      env:
+        CF_ORG_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_org_name}}
+        CF_SPACE_NAME: ${{needs.infrastructure1.outputs.cloudfoundry_space_name}}
+
       run: |
         cf api https://api.cf.us10.hana.ondemand.com
         cf auth ${{ secrets.BTP_USERNAME }} "${{ secrets.BTP_PASSWORD }}"
@@ -196,10 +200,8 @@ jobs:
         if [ -f "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}" ]; then
           source "${{needs.determine_execution_values.outputs.cf_metadata_filename_to_use}}"
           echo "FILE EXISTS"
-          echo "ORG: ${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
-          echo "SPACE: ${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
-          cf target -o "${{needs.determine_execution_values.outputs.cloudfoundry_org_name}}"
-          cf target -s "${{needs.determine_execution_values.outputs.cloudfoundry_space_name}}"
+          cf target -o $cloudfoundry_org_name
+          cf target -s $cloudfoundry_space_name
         else 
           echo "FILE DOES NOT EXIST"
           echo "ORG: ${{needs.setup_infrastructure.outputs.cloudfoundry_org_name}}"
